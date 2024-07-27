@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Football Matches</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #343a40;
+            color: #fff;
+        }
+        .table {
+            color: #fff;
+        }
+        .postponed {
+            background-color: #ffc107;
+        }
+        .finished {
+            background-color: #28a745;
+        }
+        .in_play {
+            background-color: #17a2b8;
+        }
+        .timed {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Football Matches</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Home Team</th>
+                        <th>Away Team</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if matches %}
+                        {% for match in matches %}
+                            <tr class="{{ match.status|lower }}">
+                                <td>{{ match.formatted_time }}</td>
+                                <td>
+                                    <img src="{{ match.homeTeam.crest }}" alt="Home Team Crest" width="30" height="30">
+                                    {{ match.homeTeam.name }}
+                                </td>
+                                <td>
+                                    <img src="{{ match.awayTeam.crest }}" alt="Away Team Crest" width="30" height="30">
+                                    {{ match.awayTeam.name }}
+                                </td>
+                                <td class="status">{{ match.status }}</td>
+                                <td>
+                                    {% if match.status == 'FINISHED' %}
+                                        {% if match.score %}
+                                            {{ match.score.fullTime.homeTeam|default_if_none:"0" }} - {{ match.score.fullTime.awayTeam|default_if_none:"0" }}
+                                        {% else %}
+                                            {{ today }}
+                                        {% endif %}
+                                    {% elif match.status == 'LIVE' %}
+                                        {% if match.score and match.score.current %}
+                                            {{ match.score.current.homeTeam }} - {{ match.score.current.awayTeam }}
+                                        {% else %}
+                                            No score available
+                                        {% endif %}
+                                        {% if match.elapsed %}
+                                            ({{ match.elapsed }}')
+                                        {% else %}
+                                            ({{ match.status }})
+                                        {% endif %}
+                                    {% else %}
+                                        {% if match.score and match.score.fullTime %}
+                                            {{ match.score.fullTime.homeTeam|default_if_none:"-" }} : {{ match.score.fullTime.awayTeam|default_if_none:"-" }}
+                                        {% else %}
+                                            No result available
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5">No matches found for today.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <a class="btn btn-primary btn-lg" href="{% url 'home' %}" role="button">Home Page</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

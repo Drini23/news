@@ -1,0 +1,13 @@
+
+{% block content %}
+  <h2>Stream Detail</h2>
+  
+  <h3>{{ stream.home_team.name }} vs {{ stream.away_team.name }}</h3>
+  <p>Start time: {{ stream.start_time }}</p>
+
+  <!-- Embed your live stream here -->
+  <div id="live-stream">
+    <!-- You'll need to replace this with actual embed code from your streaming service -->
+    <p>Live stream goes here</p>
+  </div>
+{% endblock %}

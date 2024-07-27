@@ -1,0 +1,11 @@
+
+{% block content %}
+  <h2>Live Streams</h2>
+  <ul>
+    {% for stream in streams %}
+      <li>
+        <a href="{% url 'stream_detail' stream.id %}">{{ stream.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
