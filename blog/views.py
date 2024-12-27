@@ -7,6 +7,22 @@ from football.api import football_api
 def home(request):
     return render(request, 'blog/home.html')
 
+
+def fetch_streaming_url(match_id, api_key):
+    # SportRadar API endpoint for fetching live stream information
+    stream_api_url = f'https://api.sportradar.com/soccer/v4/en/matches/{match_id}/stream?api_key={api_key}'
+    
+    response = requests.get(stream_api_url)
+    
+    if response.status_code == 200:
+        stream_data = response.json()
+        # Assuming stream URL is contained in the 'stream_url' field (depends on the actual API structure)
+        return stream_data.get('stream_url', None)
+    else:
+        print(f"Failed to fetch streaming URL for match ID {match_id}. Status code: {response.status_code}")
+        return None
+
+
 def fetch_team_details(team_id, headers):
     api_url = f'http://api.football-data.org/v4/teams/{team_id}'
     response = requests.get(api_url, headers=headers)
@@ -16,10 +32,11 @@ def fetch_team_details(team_id, headers):
         print(f"Failed to fetch team details for team ID {team_id}. Status code: {response.status_code}")
         return None
 
+
+
 def today_matches(request):
-    today = date.today().isoformat()
-    api_url = f'http://api.football-data.org/v4/matches'
-    headers = {'X-Auth-Token': football_api}
+    api_url = 'http://api.football-data.org/v4/matches'
+    headers = {'X-Auth-Token': football_api}  
 
     response = requests.get(api_url, headers=headers)
 
@@ -28,24 +45,35 @@ def today_matches(request):
         matches = match_data.get('matches', [])
 
         for match in matches:
-            home_team_id = match['homeTeam']['id']
-            away_team_id = match['awayTeam']['id']
-
-            home_team_details = fetch_team_details(home_team_id, headers)
-            away_team_details = fetch_team_details(away_team_id, headers)
-
-            # You can still include team names or other details if needed
-            match['homeTeam']['name'] = home_team_details.get('name') if home_team_details else 'Unknown Home Team'
-            match['awayTeam']['name'] = away_team_details.get('name') if away_team_details else 'Unknown Away Team'
-            
             # Parse and format the match time
             utc_date = match['utcDate']
             match_time = datetime.fromisoformat(utc_date.replace('Z', '+00:00'))
-            local_time = match_time.astimezone(pytz.timezone('Europe/Warsaw'))
+            local_time = match_time.astimezone(pytz.timezone('Europe/Warsaw'))  # Adjust to your timezone
             match['formatted_time'] = local_time.strftime('%Y-%m-%d %H:%M')
 
-        context = {'matches': matches, 'today': today}
+            # Extract match scores
+            score = match.get('score', {})
+            full_time = score.get('fullTime', {})
+
+            match['home_team_score'] = full_time.get('home', '-') if full_time.get('home') is not None else '-'
+            match['away_team_score'] = full_time.get('away', '-') if full_time.get('away') is not None else '-'
+            
+            # Status-specific handling
+            if match['status'] == 'IN_PLAY':
+                match['status_label'] = 'Live'
+            elif match['status'] == 'FINISHED':
+                match['status_label'] = 'Finished'
+            else:
+                match['status_label'] = '- : -'
+            
+            # Fetch streaming URL from SportRadar using your API key
+            match['stream_url'] = fetch_streaming_url(match['id'], 'BJtNpYdP2LPbbaSdW4sKWlD3qaxdyIAeqCDZNDgs')
+
+        context = {'matches': matches}
         return render(request, 'blog/today_matches.html', context)
     else:
-        error_message = f"Failed to fetch today's matches from the API. Status code: {response.status_code}"
+        error_message = f"Failed to fetch matches from the API. Status code: {response.status_code}"
         return render(request, 'blog/error.html', {'error': error_message})
+
+
+

@@ -1,34 +1,31 @@
-# consumers.py
-import json
-from channels.generic.websocket import WebsocketConsumer
-from asgiref.sync import async_to_sync
-from .models import Match
 
-class MatchConsumer(WebsocketConsumer):
-    def connect(self):
-        self.match_id = self.scope['url_route']['kwargs']['match_id']
-        self.match_group_name = 'match_%s' % self.match_id
+import requests
 
-        # Join match group
-        async_to_sync(self.channel_layer.group_add)(
-            self.match_group_name,
-            self.channel_name
-        )
+from datetime import date, datetime
+import pytz
+from django.shortcuts import render
 
-        self.accept()
 
-    def disconnect(self, close_code):
-        # Leave match group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.match_group_name,
-            self.channel_name
-        )
+football_api = 'b4514c7269ac429687a8f80cad6b9dfe'
 
-    # Receive live updates from server and send to WebSocket
-    def match_update(self, event):
-        match_data = event['data']
-        # Send match data to WebSocket
-        self.send(text_data=json.dumps({
-            'type': 'match_update',
-            'data': match_data
-        }))
+#"http://api.football-data.org/v4/teams/2061" -H "X-Auth-Token: <YOUR_API_KEY>"
+
+
+api_url = 'http://api.football-data.org/v4/matches/327117'
+
+
+
+
+headers = {'X-Auth-Token': football_api}
+
+# Make the GET request
+response = requests.get(api_url, headers=headers)
+
+# Check and print the response
+if response.status_code == 200:
+    data = response.json()
+    
+    print(f"Short Name: {data['shortName']}")
+    print(f"Website: {data['website']}")
+else:
+    print(f"Error {response.status_code}: {response.text}")

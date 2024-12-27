@@ -39,6 +39,7 @@
                         <th>Away Team</th>
                         <th>Status</th>
                         <th>Result</th>
+                        <th>Watch Live</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,42 +58,34 @@
                                 <td class="status">{{ match.status }}</td>
                                 <td>
                                     {% if match.status == 'FINISHED' %}
-                                        {% if match.score %}
-                                            {{ match.score.fullTime.homeTeam|default_if_none:"0" }} - {{ match.score.fullTime.awayTeam|default_if_none:"0" }}
-                                        {% else %}
-                                            {{ today }}
-                                        {% endif %}
-                                    {% elif match.status == 'LIVE' %}
-                                        {% if match.score and match.score.current %}
-                                            {{ match.score.current.homeTeam }} - {{ match.score.current.awayTeam }}
-                                        {% else %}
-                                            No score available
-                                        {% endif %}
-                                        {% if match.elapsed %}
-                                            ({{ match.elapsed }}')
-                                        {% else %}
-                                            ({{ match.status }})
-                                        {% endif %}
+                                        {{ match.home_team_score }} - {{ match.away_team_score }}
+                                    {% elif match.status == 'IN_PLAY' %}
+                                        {{ match.home_team_score }} - {{ match.away_team_score }} 
                                     {% else %}
-                                        {% if match.score and match.score.fullTime %}
-                                            {{ match.score.fullTime.homeTeam|default_if_none:"-" }} : {{ match.score.fullTime.awayTeam|default_if_none:"-" }}
-                                        {% else %}
-                                            No result available
-                                        {% endif %}
+                                        - : -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if match.stream_url %}
+                                        <a href="{{ match.stream_url }}" class="btn btn-info" target="_blank">Watch Live</a>
+                                    {% else %}
+                                        <span>No Stream Available</span>
                                     {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5">No matches found for today.</td>
+                            <td colspan="6">No matches found for today.</td>
                         </tr>
                     {% endif %}
                 </tbody>
             </table>
+            
             <a class="btn btn-primary btn-lg" href="{% url 'home' %}" role="button">Home Page</a>
         </div>
     </div>
+    
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
