@@ -9,28 +9,18 @@ def home(request):
 
 
 def fetch_streaming_url(match_id, api_key):
-    # SportRadar API endpoint for fetching live stream information
-    stream_api_url = f'https://api.sportradar.com/soccer/v4/en/matches/{match_id}/stream?api_key={api_key}'
-    
-    response = requests.get(stream_api_url)
-    
+    # This function should contain logic to get the streaming URL from the appropriate API
+    # Here's a placeholder that simulates fetching a stream URL:
+    stream_url_api = f'http://api.sportradar.com/v4/matches/{match_id}/streams'  # Example URL
+    headers = {'Authorization': f'Bearer {api_key}'}
+    response = requests.get(stream_url_api, headers=headers)
+
     if response.status_code == 200:
         stream_data = response.json()
-        # Assuming stream URL is contained in the 'stream_url' field (depends on the actual API structure)
-        return stream_data.get('stream_url', None)
+        # Assuming the streaming data structure contains a `url` field:
+        return stream_data.get('url', 'No stream available')
     else:
-        print(f"Failed to fetch streaming URL for match ID {match_id}. Status code: {response.status_code}")
-        return None
-
-
-def fetch_team_details(team_id, headers):
-    api_url = f'http://api.football-data.org/v4/teams/{team_id}'
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to fetch team details for team ID {team_id}. Status code: {response.status_code}")
-        return None
+        return 'No stream available'
 
 
 
@@ -77,3 +67,12 @@ def today_matches(request):
 
 
 
+
+def fetch_team_details(team_id, headers):
+    api_url = f'http://api.football-data.org/v4/teams/{team_id}'
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to fetch team details for team ID {team_id}. Status code: {response.status_code}")
+        return None
