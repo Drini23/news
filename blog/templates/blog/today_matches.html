@@ -28,65 +28,110 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="my-4">Football Matches</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Home Team</th>
-                        <th>Away Team</th>
-                        <th>Status</th>
-                        <th>Result</th>
-                        <th>Watch Live</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if matches %}
-                        {% for match in matches %}
-                            <tr class="{{ match.status|lower }}">
-                                <td>{{ match.formatted_time }}</td>
-                                <td>
-                                    <img src="{{ match.homeTeam.crest }}" alt="Home Team Crest" width="30" height="30">
-                                    {{ match.homeTeam.name }}
-                                </td>
-                                <td>
-                                    <img src="{{ match.awayTeam.crest }}" alt="Away Team Crest" width="30" height="30">
-                                    {{ match.awayTeam.name }}
-                                </td>
-                                <td class="status">{{ match.status }}</td>
-                                <td>
-                                    {% if match.status == 'FINISHED' %}
-                                        {{ match.home_team_score }} - {{ match.away_team_score }}
-                                    {% elif match.status == 'IN_PLAY' %}
-                                        {{ match.home_team_score }} - {{ match.away_team_score }} 
-                                    {% else %}
-                                        - : -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if match.stream_url %}
-                                        <a href="{{ match.stream_url }}" class="btn btn-info" target="_blank" rel="noopener noreferrer">Watch Live</a>
-                                    {% else %}
-                                        <span>No Stream Available</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
+<div class="container">
+    <h1 class="my-4">Football Matches</h1>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Home Team</th>
+                <th>Away Team</th>
+                <th>Status</th>
+                <th>Result</th>
+                <th>Watch Live</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if matches %}
+            {% for match in matches %}
+            <tr class="{{ match.status|lower }}">
+                <td>{{ match.formatted_time }}</td>
+                <td>
+                    <img src="{{ match.homeTeam.crest }}" alt="Home Team Crest" width="30" height="30">
+                    {{ match.homeTeam.name }}
+                </td>
+                <td>
+                    <img src="{{ match.awayTeam.crest }}" alt="Away Team Crest" width="30" height="30">
+                    {{ match.awayTeam.name }}
+                </td>
+                <td class="status">{{ match.status }}</td>
+                <td>
+                    {% if match.status == 'FINISHED' %}
+                    {{ match.home_team_score }} - {{ match.away_team_score }}
+                    {% elif match.status == 'IN_PLAY' %}
+                    {{ match.home_team_score }} - {{ match.away_team_score }}
                     {% else %}
-                        <tr>
-                            <td colspan="6">No matches found for today.</td>
-                        </tr>
+                    - : -
                     {% endif %}
-                </tbody>
-            </table>
-            
-            <a class="btn btn-primary btn-lg" href="{% url 'home' %}" role="button">Home Page</a>
-        </div>
+                </td>
+                <td>
+                    {% if match.stream_url %}
+                    <a href="{{ match.stream_url }}" class="btn btn-info" target="_blank" rel="noopener noreferrer">Watch
+                        Live</a>
+                    {% else %}
+                    <span>No Stream Available</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="6">No matches found for today.</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+
+        <a class="btn btn-primary btn-lg" href="{% url 'home' %}" role="button">Home Page</a>
     </div>
-    
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/matches/');
+
+    socket.onopen = function() {
+        console.log("WebSocket connected");
+    };
+
+    socket.onmessage = function(event) {
+    const response = JSON.parse(event.data);
+    console.log("Received data:", response);
+
+    response.matches.forEach(data => {
+        const rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            let homeTeam = row.querySelector("td:nth-child(2)").textContent.trim();
+            let awayTeam = row.querySelector("td:nth-child(3)").textContent.trim();
+
+            if (homeTeam === data.home_team && awayTeam === data.away_team) {
+                // Update match time
+                row.querySelector(".status").textContent = data.match_time;
+
+                // Prevent "null-null" issue by using default values
+                const homeScore = data.home_score ?? 0;
+                const awayScore = data.away_score ?? 0;
+
+                row.querySelector("td:nth-child(5)").textContent = `${homeScore} - ${awayScore}`;
+            }
+        });
+    });
+};
+
+
+    socket.onclose = function(event) {
+        console.error("WebSocket closed unexpectedly");
+    };
+
+    socket.onerror = function(event) {
+        console.error("WebSocket error:", event);
+    };
+</script>
+
+
 </body>
 </html>

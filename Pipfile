@@ -4,10 +4,20 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-gunicorn = "*"
-django = "*"
-requests = "*"
-pytz = "*"
+gunicorn = "==22.0.0"
+django = "==5.0.7"
+requests = "==2.32.3"
+pytz = "==2024.1"
+channels = "*"
+daphne = "*"
+asgiref = "==3.8.1"
+certifi = "==2024.7.4"
+charset-normalizer = "==3.3.2"
+idna = "==3.7"
+packaging = "==24.1"
+sqlparse = "==0.5.1"
+tzdata = "==2024.1"
+urllib3 = "==2.2.2"
 
 [dev-packages]
 

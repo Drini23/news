@@ -31,12 +31,14 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "channels",
     'blog',
     'news',
 ]
@@ -60,6 +62,14 @@ CHANNEL_LAYERS = {
         },
         'ROUTING': 'example_channels.routing.channel_routing',
     }
+}
+
+ASGI_APPLICATION = "football.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
 }
 
 ROOT_URLCONF = 'football.urls'
