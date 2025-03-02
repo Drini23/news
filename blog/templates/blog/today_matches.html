@@ -92,49 +92,59 @@
 
 <script>
     const socket = new WebSocket(
-        (window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws/matches/"
-    );
+    (window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws/matches/"
+);
 
-    socket.onopen = function() {
-        console.log("WebSocket connected");
-    };
+socket.onopen = function() {
+    console.log("WebSocket connected");
+};
 
-    socket.onmessage = function(event) {
-        try {
-            const response = JSON.parse(event.data);
-            console.log("Received data:", response);
+socket.onmessage = function(event) {
+    try {
+        const response = JSON.parse(event.data);
+        console.log("Received data:", response);
 
-            if (response.matches && Array.isArray(response.matches)) {
-                response.matches.forEach(data => {
-                    const rows = document.querySelectorAll("tbody tr");
+        // Ensure the matches data is an array
+        if (response.matches && Array.isArray(response.matches)) {
+            response.matches.forEach(data => {
+                const rows = document.querySelectorAll("tbody tr");
 
-                    rows.forEach(row => {
-                        let homeTeam = row.querySelector("td:nth-child(2)").textContent.trim();
-                        let awayTeam = row.querySelector("td:nth-child(3)").textContent.trim();
+                rows.forEach(row => {
+                    let homeTeam = row.querySelector("td:nth-child(2)").textContent.trim();
+                    let awayTeam = row.querySelector("td:nth-child(3)").textContent.trim();
 
-                        if (homeTeam === data.home_team && awayTeam === data.away_team) {
-                            // Update match time
-                            row.querySelector(".status").textContent = data.match_time;
-
-                            // Prevent "null-null" issue
-                            const homeScore = data.home_score !== undefined ? data.home_score : 0;
-                            const awayScore = data.away_score !== undefined ? data.away_score : 0;
-
-                            row.querySelector("td:nth-child(5)").textContent = `${homeScore} - ${awayScore}`;
+                    // Check if home and away teams match the data
+                    if (homeTeam === data.home_team && awayTeam === data.away_team) {
+                        // Update match time
+                        const statusCell = row.querySelector(".status");
+                        if (statusCell) {
+                            statusCell.textContent = data.match_time;
                         }
-                    });
+
+                        // Set the scores, default to 0 if null/undefined
+                        const homeScore = data.home_score ?? 0;
+                        const awayScore = data.away_score ?? 0;
+                        const scoreCell = row.querySelector("td:nth-child(5)");
+                        if (scoreCell) {
+                            scoreCell.textContent = `${homeScore} - ${awayScore}`;
+                        }
+                    }
                 });
-            }
-        } catch (error) {
-            console.error("Error processing WebSocket message:", error);
+            });
         }
-    };
+    } catch (error) {
+        console.error("Error processing WebSocket message:", error);
+    }
+};
 
-    
+socket.onerror = function(event) {
+    console.error("WebSocket error:", event);
+};
 
-    socket.onerror = function(event) {
-        console.error("WebSocket error:", event);
-    };
+socket.onclose = function(event) {
+    console.log("WebSocket connection closed");
+};
+
 </script>
 
 
