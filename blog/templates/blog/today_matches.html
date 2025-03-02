@@ -91,40 +91,50 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 <script>
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/matches/');
+    const socket = new WebSocket(
+        (window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws/matches/"
+    );
 
     socket.onopen = function() {
         console.log("WebSocket connected");
     };
 
     socket.onmessage = function(event) {
-    const response = JSON.parse(event.data);
-    console.log("Received data:", response);
+        try {
+            const response = JSON.parse(event.data);
+            console.log("Received data:", response);
 
-    response.matches.forEach(data => {
-        const rows = document.querySelectorAll("tbody tr");
+            if (response.matches && Array.isArray(response.matches)) {
+                response.matches.forEach(data => {
+                    const rows = document.querySelectorAll("tbody tr");
 
-        rows.forEach(row => {
-            let homeTeam = row.querySelector("td:nth-child(2)").textContent.trim();
-            let awayTeam = row.querySelector("td:nth-child(3)").textContent.trim();
+                    rows.forEach(row => {
+                        let homeTeam = row.querySelector("td:nth-child(2)").textContent.trim();
+                        let awayTeam = row.querySelector("td:nth-child(3)").textContent.trim();
 
-            if (homeTeam === data.home_team && awayTeam === data.away_team) {
-                // Update match time
-                row.querySelector(".status").textContent = data.match_time;
+                        if (homeTeam === data.home_team && awayTeam === data.away_team) {
+                            // Update match time
+                            row.querySelector(".status").textContent = data.match_time;
 
-                // Prevent "null-null" issue by using default values
-                const homeScore = data.home_score ?? 0;
-                const awayScore = data.away_score ?? 0;
+                            // Prevent "null-null" issue
+                            const homeScore = data.home_score !== undefined ? data.home_score : 0;
+                            const awayScore = data.away_score !== undefined ? data.away_score : 0;
 
-                row.querySelector("td:nth-child(5)").textContent = `${homeScore} - ${awayScore}`;
+                            row.querySelector("td:nth-child(5)").textContent = `${homeScore} - ${awayScore}`;
+                        }
+                    });
+                });
             }
-        });
-    });
-};
-
+        } catch (error) {
+            console.error("Error processing WebSocket message:", error);
+        }
+    };
 
     socket.onclose = function(event) {
-        console.error("WebSocket closed unexpectedly");
+        console.warn("WebSocket closed unexpectedly");
+        setTimeout(() => {
+            location.reload();  // Reload page on disconnect
+        }, 5000);  // Retry after 5 seconds
     };
 
     socket.onerror = function(event) {
