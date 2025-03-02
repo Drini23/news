@@ -18,6 +18,7 @@ packaging = "==24.1"
 sqlparse = "==0.5.1"
 tzdata = "==2024.1"
 urllib3 = "==2.2.2"
+channels-redis = "*"
 
 [dev-packages]
 
