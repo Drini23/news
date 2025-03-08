@@ -29,9 +29,12 @@ def today_matches(request):
     headers = {'X-Auth-Token': football_api}  
 
     response = requests.get(api_url, headers=headers)
+    if response.status_code == 403:
+     print("Failed to fetch matches:", response.json())  # Log the response
 
     if response.status_code == 200:
         match_data = response.json()
+        print(match_data)
         matches = match_data.get('matches', [])
 
         for match in matches:
@@ -40,6 +43,7 @@ def today_matches(request):
             match_time = datetime.fromisoformat(utc_date.replace('Z', '+00:00'))
             local_time = match_time.astimezone(pytz.timezone('Europe/Warsaw'))  # Adjust to your timezone
             match['formatted_time'] = local_time.strftime('%Y-%m-%d %H:%M')
+            
 
             # Extract match scores
             score = match.get('score', {})
