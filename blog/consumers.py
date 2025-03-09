@@ -90,7 +90,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
             return f"{int(elapsed)}:00"
 
         # **Ensure half-time pause**
-        half_time_duration = 15  # Standard half-time duration (adjust if needed)
+        half_time_duration = 18  # Standard half-time duration (adjust if needed)
         second_half_start_time = start_dt + timedelta(minutes=45 + half_time_duration)
 
         # **If still in half-time, don't count further**
