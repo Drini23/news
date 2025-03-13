@@ -6,9 +6,8 @@ import pytz
 from channels.generic.websocket import AsyncWebsocketConsumer
 from football.api import football_api
 
-API_URL = 'http://api.football-data.org/v4/matches'  # Replace with your API
-HEADERS = {"X-Auth-Token": football_api}  # Replace with your API key
-
+API_URL = 'http://api.football-data.org/v4/matches'  
+HEADERS = {"X-Auth-Token": football_api}  #
 class MatchConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
@@ -24,7 +23,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
             matches = await self.get_live_matches()
             #print("Sending matches:", matches)  # Add logging here
             await self.send(json.dumps({"matches": matches}))
-            await asyncio.sleep(10)  # Update every 10 seconds
+            await asyncio.sleep(1)  # Update every 10 seconds
 
     async def get_live_matches(self):
         response = requests.get(API_URL, headers=HEADERS)
