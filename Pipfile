@@ -21,6 +21,8 @@ urllib3 = "==2.2.2"
 whitenoise = "*"
 channels-redis = "*"
 django-ratelimit = "*"
+google-api-python-client = "*"
+pytube = "*"
 
 [dev-packages]
 

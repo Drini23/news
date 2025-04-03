@@ -1,10 +1,19 @@
 import logging
 import requests
-from datetime import date, datetime
 import pytz
+from urllib.parse import quote
+
+from datetime import date, datetime
+from football.api import football_api
+
 from django.shortcuts import render
 from django_ratelimit.decorators import ratelimit
-from football.api import football_api
+from django.core.cache import cache
+
+
+import json
+from django.http import JsonResponse
+from django.utils.timezone import now
 
 
 def home(request):
@@ -26,14 +35,6 @@ def fetch_streaming_url(match_id, api_key):
         return 'No stream available'
 
 
-import logging
-import pytz
-import requests
-from datetime import datetime
-from django.shortcuts import render
-from django.core.cache import cache
-from django_ratelimit.decorators import ratelimit
-#from myproject.utils import fetch_streaming_url  # Assuming you have a utility function for this
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,8 @@ logger = logging.getLogger(__name__)
 def today_matches(request):
     api_url = 'http://api.football-data.org/v4/matches'
     headers = {'X-Auth-Token': football_api}
-
+    
+    
     # Check if matches are cached
     cached_matches = cache.get("todays_matches")
     if cached_matches:
@@ -67,7 +69,9 @@ def today_matches(request):
     # Cache the matches with an expiration time (e.g., 10 minutes)
     cache.set("todays_matches", matches, timeout=600)
     
-    return render(request, 'blog/today_matches.html', {'matches': matches})
+    
+    
+    return render(request, 'blog/today_matches.html', {'matches': matches, })
 
 
 def process_match_data(match):
@@ -93,8 +97,6 @@ def process_match_data(match):
     return match
 
 
-
-
 def fetch_team_details(team_id, headers):
     api_url = f'http://api.football-data.org/v4/teams/{team_id}'
     response = requests.get(api_url, headers=headers)
@@ -103,3 +105,80 @@ def fetch_team_details(team_id, headers):
     else:
         print(f"Failed to fetch team details for team ID {team_id}. Status code: {response.status_code}")
         return None
+    
+
+API_KEY = "AIzaSyCOXlN5-3JK95GMjuKo5kpZwqUrmi5DJWI"
+SEARCH_QUERY = (
+    "Premier League Highlights | La Liga Highlights | Bundesliga Highlights | Serie A Highlights | "
+    "Ligue 1 Highlights | Champions League Highlights | Europa League Highlights | FIFA World Cup Highlights | UEFA Euro Highlights"
+)
+MAX_RESULTS = 15  # Fetch more videos
+
+def get_youtube_videos():
+    """Fetch highlights from YouTube API"""
+    url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&q={SEARCH_QUERY}&type=video&key={API_KEY}&maxResults={MAX_RESULTS}"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        videos = [
+            {"title": item["snippet"]["title"], "videoId": item["id"]["videoId"]}
+            for item in data.get("items", [])
+        ]
+        return videos
+    return []
+
+def fetch_new_video(request):
+    """Return a new video when a user removes one"""
+    existing_videos = request.GET.getlist("existing_videos[]")  # Get list of already displayed videos
+    videos = get_youtube_videos()
+
+    # Find a video that is not already displayed
+    new_video = next((v for v in videos if v["videoId"] not in existing_videos), None)
+
+    if new_video:
+        return JsonResponse(new_video)
+    return JsonResponse({"error": "No new videos found"}, status=404)
+
+
+
+
+
+def highlights(request):
+    """Render the highlights page"""
+    videos = get_youtube_videos()
+    return render(request, "blog/highlights.html", {"data": videos})
+
+
+
+def api(request):
+    API_KEY = "AIzaSyCOXlN5-3JK95GMjuKo5kpZwqUrmi5DJWI"  # Replace with your actual API key
+    SEARCH_QUERY = request.GET.get("q", "Live Football Match")  # More specific search
+    MAX_RESULTS = 20  # Number of results to fetch
+
+    # Construct the API URL with better filtering
+    url = (
+        f"https://www.googleapis.com/youtube/v3/search"
+        f"?part=snippet&q={SEARCH_QUERY}"
+        f"&type=video&eventType=live"
+        f"&videoCategoryId=17"  # Sports category
+        f"&key={API_KEY}&maxResults={MAX_RESULTS}"
+    )
+
+    # Fetch data from the YouTube API
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+
+        # Filter out fake matches (optional)
+        real_matches = []
+        for item in data.get("items", []):
+            title = item["snippet"]["title"].lower()
+            description = item["snippet"]["description"].lower()
+
+            if any(keyword in title for keyword in ["live", "football", "match", "league"]):
+                real_matches.append(item)
+
+        return render(request, "blog/api.html", {"data": {"items": real_matches}, "query": SEARCH_QUERY})
+
+    return render(request, "blog/api.html", {"error": "Failed to fetch data from YouTube API."})

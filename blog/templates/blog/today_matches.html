@@ -20,14 +20,15 @@
             background-color: #28a745;
         }
         .in_play {
-            background-color: #17a2b8;
+            background-color:rgb(1, 10, 11);
         }
         .timed {
-            background-color: #007bff;
+            background-color:rgb(2, 9, 16);
         }
     </style>
 </head>
 <body>
+
 <div class="container">
     <h1 class="my-4">Football Matches</h1>
     <div class="table-responsive">
@@ -85,6 +86,8 @@
 
         <a class="btn btn-primary btn-lg" href="{% url 'home' %}" role="button">Home Page</a>
     </div>
+
+    
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -144,6 +147,10 @@ socket.onerror = function(event) {
 socket.onclose = function(event) {
     console.log("WebSocket connection closed");
 };
+
+
+
+
 
 </script>
 

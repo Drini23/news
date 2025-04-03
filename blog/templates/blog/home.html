@@ -3,36 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Matches Home</title>
+    <title>Football Matches Hub | Live Scores & News</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #dc2626;
+            --accent-color: #f59e0b;
+            --dark-bg: #0f172a;
+            --light-text: #f8fafc;
+            --card-bg: #1e293b;
+        }
+        
         body {
-            background-color: #343a40;  /* Dark background */
-            color: #fff;  /* White text */
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            font-family: 'Open Sans', sans-serif;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), 
+                              url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
         }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
         .jumbotron {
-            background-color: #007bff;  /* Blue background */
-            color: #fff;  /* White text */
+            background: rgba(30, 58, 138, 0.85);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
+        .jumbotron::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
         .btn-primary {
-            background-color: #28a745;  /* Green background */
+            background-color: var(--secondary-color);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: 600;
+            margin: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            min-width: 200px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #b91c1c;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-highlight {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-highlight:hover {
+            background-color: #d97706;
+        }
+        
+        .btn-group-custom {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .display-4 {
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .lead {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            vertical-align: middle;
+            color: var(--accent-color);
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+            }
+        }
+        
+        .live-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .btn-group-custom {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-primary {
+                width: 100%;
+                margin: 8px 0;
+            }
+            
+            .display-4 {
+                font-size: 2.5rem;
+            }
+            
+            .lead {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="jumbotron mt-4">
-            <h1 class="display-4">Welcome to the Football Matches Portal</h1>
-            <p class="lead">Get the latest updates on football matches happening today.</p>
-            <hr class="my-4">
-            <p>Click the button below to view today's matches.</p>
-            <a class="btn btn-primary btn-lg" href="{% url 'today_matches' %}" role="button">View Today's Matches</a>
-            <a class="btn btn-primary btn-lg" href="{% url 'football_news' %}" role="button">View Last News</a>
+    <div class="container py-5">
+        <div class="jumbotron text-center">
+            <h1 class="display-4">
+                <i class="fas fa-futbol feature-icon"></i> Football Matches Hub
+            </h1>
+            <p class="lead">Your ultimate destination for live scores, match highlights, and breaking football news</p>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
+            <p>Stay updated with real-time football action from around the world</p>
+            
+            <div class="btn-group-custom">
+                <a class="btn btn-primary" href="{% url 'today_matches' %}" role="button">
+                    <i class="fas fa-calendar-day"></i> Today's Matches
+                </a>
+                <a class="btn btn-primary pulse" href="{% url 'api' %}" role="button">
+                    <i class="fas fa-bolt"></i> Live Events
+                    <span class="live-badge">LIVE</span>
+                </a>
+                <a class="btn btn-primary btn-highlight" href="{% url 'highlights' %}" role="button">
+                    <i class="fas fa-play-circle"></i> Match Highlights
+                </a>
+                <a class="btn btn-primary" href="{% url 'football_news' %}" role="button">
+                    <i class="fas fa-newspaper"></i> Latest News
+                </a>
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark text-white border-0 shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-trophy text-warning mr-2"></i> Top Leagues</h5>
+                        <p class="card-text">Follow Premier League, La Liga, Bundesliga, Serie A, and more with live updates.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark text-white border-0 shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-video text-danger mr-2"></i> Video Highlights</h5>
+                        <p class="card-text">Watch key moments from all major matches with our curated highlight reels.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark text-white border-0 shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-bell text-info mr-2"></i> Instant Alerts</h5>
+                        <p class="card-text">Get real-time notifications for goals, red cards, and match results.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Football Matches Hub. All rights reserved.</p>
+            <p class="text-muted">
+                <i class="fas fa-shield-alt"></i> Data provided by Football API | 
+                <i class="fas fa-rss"></i> News from trusted sources
+            </p>
+        </div>
+    </footer>
+
     <!-- Include Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        // Add animation to buttons on hover
+        $(document).ready(function() {
+            $('.btn-primary').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-3px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+        });
+    </script>
 </body>
 </html>
