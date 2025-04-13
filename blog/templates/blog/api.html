@@ -3,108 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Football Streams</title>
+    <title>Live Football Streams | Real-Time Matches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --accent-red: #dc2626;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --live-indicator: #ef4444;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(220, 38, 38, 0.15) 0%, transparent 40%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .header {
             text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
         }
-        h1 {
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-        a {
-            color: #1e90ff;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-        .search-bar input {
-            width: 300px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-        }
-        .search-bar button {
-            padding: 10px 15px;
-            font-size: 16px;
-            background-color: #1e90ff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .video-list {
+        
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            align-items: center;
             justify-content: center;
+            gap: 15px;
         }
-        .video-item {
-            background-color: #222;
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 15px;
-            width: 320px;
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+        
+        .header h1::before {
+            content: "🔴";
+            font-size: 1.5rem;
+            animation: pulse 1.5s infinite;
         }
-        .video-item iframe {
-            width: 100%;
-            height: 180px;
-            border-radius: 8px;
+        
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .video-item h3 {
-            font-size: 16px;
-            margin: 10px 0;
+        
+        .home-link:hover {
+            background-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
-        .video-item p {
-            font-size: 14px;
-            color: #aaa;
+        
+        .home-link i {
+            margin-right: 8px;
         }
-        .error {
-            color: red;
-            font-size: 18px;
+        
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            position: relative;
+        }
+        
+        .search-form {
+            display: flex;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            font-size: 1.1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            backdrop-filter: blur(5px);
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .search-btn {
+            padding: 0 1.8rem;
+            background-color: var(--accent-red);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-btn:hover {
+            background-color: #b91c1c;
+        }
+        
+        .streams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 30px;
+            padding: 1rem 0;
+        }
+        
+        .stream-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .stream-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .stream-card::before {
+            content: "LIVE";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: var(--live-indicator);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
             font-weight: bold;
+            z-index: 2;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .stream-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .stream-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .stream-info {
+            padding: 1.2rem;
+        }
+        
+        .stream-title {
+            font-size: 1.2rem;
+            margin: 0 0 0.8rem;
+            color: var(--text-light);
+            font-weight: 600;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .stream-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            grid-column: 1 / -1;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-red);
+        }
+        
+        .empty-state h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 2rem;
+            grid-column: 1 / -1;
+            color: var(--accent-red);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .streams-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input {
+                padding: 0.8rem 1.2rem;
+            }
+            
+            .search-btn {
+                padding: 0 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Live Football Streams</h1>
-    <a href="{% url 'home' %}">🏠 Home</a>
-
-    <div class="search-bar">
-        <form method="GET" action="">
-            <input type="text" name="q" placeholder="Search for live football streams..." value="{{ query }}">
-            <button type="submit">🔍 Search</button>
-        </form>
+    <div class="container">
+        <div class="header">
+            <h1>Live Football Streams</h1>
+            <a href="{% url 'home' %}" class="home-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+        
+        <div class="search-container">
+            <form method="GET" action="" class="search-form">
+                <input type="text" name="q" class="search-input" 
+                       placeholder="Search for live football streams..." 
+                       value="{{ query }}">
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+        
+        <div class="streams-grid">
+            {% if error %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>{{ error }}</p>
+                </div>
+            {% elif data.items %}
+                {% for item in data.items %}
+                    <div class="stream-card">
+                        <div class="stream-container">
+                            <iframe src="https://www.youtube.com/embed/{{ item.id.videoId }}"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="stream-info">
+                            <h3 class="stream-title">{{ item.snippet.title }}</h3>
+                            <p class="stream-desc">{{ item.snippet.description }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-tv"></i>
+                    <h2>No Live Streams Available</h2>
+                    <p>We couldn't find any live football streams at the moment.</p>
+                    <p>Try searching for specific matches or check back later.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% elif data.items %}
-        <div class="video-list">
-            {% for item in data.items %}
-                <div class="video-item">
-                    <iframe
-                        src="https://www.youtube.com/embed/{{ item.id.videoId }}"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                    <h3>{{ item.snippet.title }}</h3>
-                    <p>{{ item.snippet.description }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="error">⚠️ No live football streams found.</p>
-    {% endif %}
+    <script>
+        // Add animation to stream cards when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const streamCards = document.querySelectorAll('.stream-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            streamCards.forEach(card => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
 </body>
 </html>

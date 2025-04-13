@@ -3,102 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top Football Highlights</title>
+    <title>Top Football Highlights | HD Match Moments</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --accent-red: #dc2626;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(220, 38, 38, 0.15) 0%, transparent 40%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
             text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
         }
-        h1 {
-            margin-bottom: 20px;
+        
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
-        .video-list {
+        
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .home-link:hover {
+            color: var(--accent-red);
+            transform: translateX(-5px);
+        }
+        
+        .home-link i {
+            margin-right: 8px;
+            font-size: 1.5rem;
+        }
+        
+        .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 1rem 0;
         }
-        .video-item {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+        
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
         }
-        .video-item:hover {
-            transform: scale(1.03);
+        
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
         }
-        iframe {
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 180px;
-            border-radius: 8px;
+            height: 100%;
+            border: none;
         }
-        h3 {
-            font-size: 16px;
-            margin: 10px 0;
+        
+        .video-info {
+            padding: 1.2rem;
         }
+        
+        .video-title {
+            font-size: 1.1rem;
+            margin: 0 0 1rem;
+            color: var(--text-light);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        .video-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
         .remove-btn {
-            background-color: red;
+            background-color: var(--accent-red);
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
-            border-radius: 5px;
-            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
         }
+        
         .remove-btn:hover {
-            background-color: darkred;
+            background-color: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .error {
-            color: red;
+        
+        .watch-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .watch-btn:hover {
+            background-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-red);
+        }
+        
+        .empty-state h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Top Football Highlights</h1>
-    <h2><a href="{% url 'home' %}">🏠 Home</a></h2>
-    
-    {% if data %}
-        <div class="video-list">
-            {% for item in data %}
-                <div class="video-item" id="{{ item.videoId }}">
-                    <iframe src="https://www.youtube.com/embed/{{ item.videoId }}" allowfullscreen></iframe>
-                    <h3>{{ item.title }}</h3>
-                    <button class="remove-btn" onclick="removeVideo('{{ item.videoId }}')">Remove ❌</button>
-                </div>
-            {% endfor %}
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-play-circle"></i> Top Football Highlights</h1>
+            <a href="{% url 'home' %}" class="home-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
         </div>
-    {% else %}
-        <p class="error">⚠️ No highlights found.</p>
-    {% endif %}
+        
+        {% if data %}
+            <div class="video-grid">
+                {% for item in data %}
+                    <div class="video-card" id="{{ item.videoId }}">
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/{{ item.videoId }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 class="video-title">{{ item.title }}</h3>
+                            <div class="video-actions">
+                                <a href="https://www.youtube.com/watch?v={{ item.videoId }}" 
+                                   target="_blank" 
+                                   class="watch-btn">
+                                    <i class="fas fa-external-link-alt"></i> Watch on YouTube
+                                </a>
+                                <button class="remove-btn" onclick="removeVideo('{{ item.videoId }}')">
+                                    <i class="fas fa-times"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="loading" id="loadingIndicator">
+                <i class="fas fa-circle-notch"></i>
+                <p>Loading new highlights...</p>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2>No Highlights Available</h2>
+                <p>We couldn't find any football highlights at the moment.</p>
+                <p>Please try again later or check back soon for updates.</p>
+            </div>
+        {% endif %}
+    </div>
 
     <script>
         function getExistingVideos() {
-            return Array.from(document.querySelectorAll(".video-item"))
+            return Array.from(document.querySelectorAll(".video-card"))
                         .map(video => video.id);
         }
         
         function removeVideo(videoId) {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const videoElement = document.getElementById(videoId);
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            videoElement.style.opacity = '0.5';
+            
             fetch(`{% url 'fetch_new_video' %}?existing_videos[]=${getExistingVideos().join('&existing_videos[]=')}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.videoId) {
-                        let videoDiv = document.getElementById(videoId);
-                        videoDiv.id = data.videoId;
-                        videoDiv.innerHTML = `
-                            <iframe src="https://www.youtube.com/embed/${data.videoId}" allowfullscreen></iframe>
-                            <h3>${data.title}</h3>
-                            <button class="remove-btn" onclick="removeVideo('${data.videoId}')">Remove ❌</button>
+                        // Create new video card
+                        const newVideoCard = document.createElement('div');
+                        newVideoCard.className = 'video-card';
+                        newVideoCard.id = data.videoId;
+                        newVideoCard.innerHTML = `
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/${data.videoId}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                            <div class="video-info">
+                                <h3 class="video-title">${data.title}</h3>
+                                <div class="video-actions">
+                                    <a href="https://www.youtube.com/watch?v=${data.videoId}" 
+                                       target="_blank" 
+                                       class="watch-btn">
+                                        <i class="fas fa-external-link-alt"></i> Watch on YouTube
+                                    </a>
+                                    <button class="remove-btn" onclick="removeVideo('${data.videoId}')">
+                                        <i class="fas fa-times"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
                         `;
+                        
+                        // Replace old video with new one
+                        videoElement.parentNode.replaceChild(newVideoCard, videoElement);
+                        
+                        // Add animation to new card
+                        setTimeout(() => {
+                            newVideoCard.style.transform = 'scale(1.05)';
+                            setTimeout(() => {
+                                newVideoCard.style.transform = 'scale(1)';
+                            }, 300);
+                        }, 50);
                     } else {
-                        alert("No new videos available!");
+                        alert("No new highlights available right now. Please try again later!");
+                        videoElement.style.opacity = '1';
                     }
                 })
-                .catch(error => console.error("Error:", error));
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while fetching new highlights.");
+                    videoElement.style.opacity = '1';
+                })
+                .finally(() => {
+                    loadingIndicator.style.display = 'none';
+                });
         }
+        
+        // Add animation to cards when they come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            videoCards.forEach(card => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                observer.observe(card);
+            });
+        });
     </script>
 </body>
 </html>

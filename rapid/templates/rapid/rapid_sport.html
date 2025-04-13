@@ -125,7 +125,6 @@
 
     <script>
     $(document).ready(function() {
-        // Current date management
         let currentDate = new Date();
         let allMatches = [];
         let showLiveOnly = false;
@@ -156,32 +155,26 @@
             loadMatches();
         });
 
-        // Live matches button handler
         $('#live-btn').click(function() {
             showLiveOnly = !showLiveOnly;
             $(this).toggleClass('active');
             renderMatches();
         });
 
-        // Update the date display
         function updateDateDisplay() {
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateStr = currentDate.toLocaleDateString('en-US', options);
             $('h1').html(`<i class="bi bi-joystick"></i> Football Matches: ${dateStr}`);
         }
 
-        // Load matches from server
         function loadMatches() {
-            // Show loading, hide other sections
             $('#loading-indicator').removeClass('d-none');
             $('#matches-container').addClass('d-none');
             $('#no-matches').addClass('d-none');
             $('#error-container').addClass('d-none');
 
-            // Add spinner to refresh button
             $('#refresh-btn').html('<span class="spinner-border spinner-border-sm"></span> Loading...');
 
-            // Format date for API
             const dateStr = currentDate.toISOString().split('T')[0];
 
             $.ajax({
@@ -189,7 +182,6 @@
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-                    // Reset refresh button
                     $('#refresh-btn').html('<i class="bi bi-arrow-clockwise"></i> Refresh');
 
                     if (data.success) {
@@ -200,18 +192,15 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Reset refresh button
                     $('#refresh-btn').html('<i class="bi bi-arrow-clockwise"></i> Refresh');
                     showError("Failed to load matches. Please try again.");
                 }
             });
         }
 
-        // Render matches to the page
         function renderMatches() {
             $('#loading-indicator').addClass('d-none');
 
-            // Filter matches based on live status
             let filteredMatches = showLiveOnly
                 ? allMatches.filter(match => match.is_live)
                 : allMatches;
@@ -222,7 +211,6 @@
                 return;
             }
 
-            // Group matches by league
             const leagues = {};
             filteredMatches.forEach(match => {
                 if (!leagues[match.league_id]) {
@@ -236,18 +224,15 @@
                 leagues[match.league_id].matches.push(match);
             });
 
-            // Sort leagues by country then name
             const sortedLeagues = Object.values(leagues).sort((a, b) => {
                 if (a.country < b.country) return -1;
                 if (a.country > b.country) return 1;
                 return a.name.localeCompare(b.name);
             });
 
-            // Build HTML
             let html = '';
 
             sortedLeagues.forEach(league => {
-                // League header
                 html += `
                     <div class="league-header mb-3">
                         <img src="${league.flag}" class="country-flag me-2">
@@ -256,10 +241,8 @@
                     </div>
                 `;
 
-                // Sort matches by time
                 league.matches.sort((a, b) => new Date(a.time) - new Date(b.time));
 
-                // Add matches
                 league.matches.forEach(match => {
                     const matchTime = new Date(match.time);
                     const timeStr = matchTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -272,7 +255,7 @@
                     }
 
                     html += `
-                        <div class="match-card ${match.is_live ? 'live' : ''}">
+                        <div id="match-${match.id}" class="match-card ${match.is_live ? 'live' : ''}">
                             <div class="row align-items-center">
                                 <div class="col-md-5 text-end">
                                     <span class="team-name">${match.home_team}</span>
@@ -302,31 +285,57 @@
                 });
             });
 
-            // Update the page
             $('#matches-container').html(html).removeClass('d-none');
             $('#no-matches').addClass('d-none');
-            $('#last-updated').text('Last updated: ' + new Date().toLocaleTimeString());
-
-            // Update page title with date
-            updateDateDisplay();
+            $('#last-updated').text('Last updated: ' + new Date().toLocaleString());
         }
 
-        // Show error message
         function showError(message) {
+            $('#error-container').html(`<div class="alert alert-danger">${message}</div>`).removeClass('d-none');
             $('#loading-indicator').addClass('d-none');
-            $('#matches-container').addClass('d-none');
-            $('#no-matches').addClass('d-none');
-
-            $('#error-container').html(`
-                <div class="alert alert-danger">
-                    ${message}
-                    <button class="btn btn-sm btn-outline-danger ms-3" onclick="loadMatches()">
-                        <i class="bi bi-arrow-clockwise"></i> Retry
-                    </button>
-                </div>
-            `).removeClass('d-none');
         }
     });
+
+    const socket = new WebSocket(
+        (window.location.protocol === "https:" ? "wss://" : "ws://") + 
+        window.location.host + "/ws/matches/"
+    );
+
+    socket.onopen = function(e) {
+        console.log("[WebSocket] Connection established");
+    };
+
+    socket.onmessage = function(event) {
+        console.log("[WebSocket] Data received:", event.data);
+        try {
+            const data = JSON.parse(event.data);
+            
+            if (data.matches && Array.isArray(data.matches)) {
+                // Update the page with the latest match data
+                data.matches.forEach(match => {
+                    const matchElement = document.getElementById(`match-${match.id}`);
+                    if (matchElement) {
+                        matchElement.querySelector('.match-status').innerText = match.status;
+                        matchElement.querySelector('.match-score').innerText = `${match.home_score} - ${match.away_score}`;
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("[WebSocket] Error processing message:", error);
+        }
+    };
+
+    socket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log(`[WebSocket] Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.log('[WebSocket] Connection died');
+        }
+    };
+
+    socket.onerror = function(error) {
+        console.log(`[WebSocket] Error: ${error.message}`);
+    };
     </script>
 </body>
 </html>
