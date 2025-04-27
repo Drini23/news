@@ -5,6 +5,7 @@ from django.shortcuts import render
 from datetime import datetime, timezone
 from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
+from football.api import rapid_api
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,7 @@ def get_todays_matches(request):
         # API Configuration
         BASE_URL = "https://v3.football.api-sports.io"
         HEADERS = {
-            "x-rapidapi-key": "5a66037bbb5dbd160f1d96d29a3b4214",
+            "x-rapidapi-key": rapid_api,
             "x-rapidapi-host": "v3.football.api-sports.io"
         }
 
