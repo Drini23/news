@@ -1,202 +1,94 @@
 import requests
-import logging
-from django.http import JsonResponse
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, unquote
+from googletrans import Translator
+
 from django.shortcuts import render
-from datetime import datetime, timezone
-from django.utils.timezone import now
-from django.views.decorators.cache import cache_page
-from football.api import rapid_api
-
-logger = logging.getLogger(__name__)
-
-# Top competitions dictionary (matches your template)
-TOP_COMPETITIONS = {
-    # Domestic Leagues
-    39: "Premier League",
-    140: "La Liga",
-    135: "Serie A",
-    78: "Bundesliga",
-    61: "Ligue 1",
-    94: "Primeira Liga",
-    88: "Eredivisie",
-    253: "MLS",
-
-    # European Competitions
-    2: "Champions League",
-    3: "Europa League",
-    848: "Europa Conference League",
-
-    # Domestic Cups
-    137: "Coppa Italia",
-    143: "Copa del Rey",
-    45: "FA Cup",
-    529: "DFB Pokal",
-    66: "Coupe de France",
-
-    # International
-    1: "World Cup",
-    15: "FIFA Club World Cup",
-    13: "UEFA Nations League"
-}
+from datetime import datetime, timedelta
 
 
-@cache_page(60 * 5)  # Cache for 5 minutes
-def get_todays_matches(request):
-    """
-    Fetch today's matches from top competitions only
-    """
-    try:
-        # API Configuration
-        BASE_URL = "https://v3.football.api-sports.io"
-        HEADERS = {
-            "x-rapidapi-key": rapid_api,
-            "x-rapidapi-host": "v3.football.api-sports.io"
-        }
+def fetch_livekoora_matches():
+    base_url = "https://livekoora.info/"
+    url = base_url  # Always use the base URL for today's matches
+    headers = {'User-Agent': 'Mozilla/5.0'}
 
-        # Get date from request or use today
-        date_param = request.GET.get('date')
-        if date_param:
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    translator = Translator()
+    matches = []
+
+    for link in soup.find_all('a', href=True):
+        href = link['href']
+        if '/matches/' in href:
+            full_url = urljoin(base_url, href)
+            slug = href.split('/')[-2] if href.endswith('/') else href.split('/')[-1]
+            decoded_name = unquote(slug).replace('-', ' ')
+
+            # Translate team names to English
             try:
-                requested_date = datetime.strptime(date_param, "%Y-%m-%d").date()
-                query_date = requested_date.strftime("%Y-%m-%d")
-            except ValueError:
-                return JsonResponse(
-                    {"error": "Invalid date format. Use YYYY-MM-DD"},
-                    status=400
-                )
-        else:
-            query_date = now().strftime("%Y-%m-%d")
+                translated = translator.translate(decoded_name, src='ar', dest='en').text.title()
+            except Exception:
+                translated = decoded_name.title()
 
-        logger.info(f"Fetching top competitions matches for {query_date}")
+            # Extract match time if available
+            time_tag = link.find('time')  # Assuming the match time is within <time> tag
+            match_time = time_tag.text.strip() if time_tag else "Unknown"
 
-        # Fetch matches
-        fixtures_params = {
-            "date": query_date,
-            "timezone": "UTC"
-        }
+            matches.append({
+                'teams': translated,
+                'url': full_url,
+                'time': match_time
+            })
 
-        try:
-            response = requests.get(
-                f"{BASE_URL}/fixtures",
-                headers=HEADERS,
-                params=fixtures_params,
-                timeout=15
-            )
-            response.raise_for_status()
-            data = response.json()
-
-            if data.get('errors'):
-                logger.error(f"API Error: {data['errors']}")
-                return JsonResponse(
-                    {"error": data['errors']},
-                    status=response.status_code
-                )
-
-            all_matches = data.get('response', [])
-
-            # Filter matches to only include top competitions
-            matches = [match for match in all_matches
-                       if match.get('league', {}).get('id') in TOP_COMPETITIONS]
-
-            logger.info(f"Found {len(matches)} matches in top competitions")
-
-        except requests.exceptions.RequestException as e:
-            logger.error(f"API Request Failed: {str(e)}")
-            return JsonResponse(
-                {"error": str(e)},
-                status=500
-            )
-
-        # Process matches
-        processed_matches = []
-        live_matches = []
-        competitions = {}
-        now_time = datetime.now(timezone.utc)
-
-        for match in matches:
-            try:
-                fixture = match.get('fixture', {})
-                league = match.get('league', {})
-                teams = match.get('teams', {})
-                goals = match.get('goals', {})
-                status = fixture.get('status', {})
-
-                # Calculate match time and status
-                match_time = fixture.get('date')
-                match_datetime = datetime.strptime(match_time, "%Y-%m-%dT%H:%M:%S%z") if match_time else None
-
-                elapsed = None
-                if match_datetime and status.get('short') in ["1H", "HT", "2H"]:
-                    total_mins = int((now_time - match_datetime).total_seconds() // 60)
-                    if status['short'] == "1H":
-                        elapsed = min(total_mins, 45)
-                    elif status['short'] == "HT":
-                        elapsed = "HT"
-                    elif status['short'] == "2H":
-                        elapsed = max(1, total_mins - 45)
-
-                # Store competition info
-                league_id = league.get('id')
-                if league_id:
-                    competitions[league_id] = {
-                        'name': TOP_COMPETITIONS.get(league_id, league.get('name')),
-                        'country': league.get('country', 'International'),
-                        'logo': league.get('logo'),
-                        'flag': league.get('flag'),
-                        'is_cup': league_id in [137, 143, 45, 529, 66, 1, 15, 13]  # Cup competitions
-                    }
-
-                match_data = {
-                    'id': fixture.get('id'),
-                    'time': match_time,
-                    'status': status.get('long'),
-                    'is_live': status.get('short') in ["1H", "HT", "2H"],
-                    'elapsed': elapsed,
-                    'league_id': league_id,
-                    'league_name': TOP_COMPETITIONS.get(league_id, league.get('name')),
-                    'country': league.get('country', 'International'),
-                    'home_team': teams.get('home', {}).get('name'),
-                    'away_team': teams.get('away', {}).get('name'),
-                    'home_logo': teams.get('home', {}).get('logo', '/static/images/default_logo.png'),
-                    'away_logo': teams.get('away', {}).get('logo', '/static/images/default_logo.png'),
-                    'home_score': goals.get('home', '-'),
-                    'away_score': goals.get('away', '-'),
-                    'venue': fixture.get('venue', {}).get('name'),
-                    'referee': fixture.get('referee'),
-                    'is_cup': league_id in [137, 143, 45, 529, 66, 1, 15, 13]  # For template styling
-                }
-
-                processed_matches.append(match_data)
-                if match_data['is_live']:
-                    live_matches.append(match_data)
-
-            except Exception as e:
-                logger.error(f"Error processing match: {str(e)}")
-                continue
-
-        return JsonResponse({
-            'success': True,
-            'date': query_date,
-            'matches': processed_matches,
-            'live_matches': live_matches,
-            'competitions': competitions,
-            'count': len(processed_matches),
-            'live_count': len(live_matches)
-        })
-
-    except Exception as e:
-        logger.critical(f"Unexpected error: {str(e)}")
-        return JsonResponse({
-            'error': 'Server error',
-            'details': str(e)
-        }, status=500)
+    return matches
 
 
-def rapid_sport(request):
-    """Render the matches page with live updating"""
-    context = {
-        'page_title': "Top Football Matches",
-        'refresh_interval': 120  # Refresh every 2 minutes
+def live_streams_view(request):
+    matches = fetch_livekoora_matches()
+    return render(request, 'rapid/stream.html', {'matches': matches, 'day': 'Today'})
+
+
+from django.shortcuts import render
+import requests
+
+def all_sport_api(request):
+    url = "https://all-sport-live-stream.p.rapidapi.com/api/v2/br/all-live-stream"
+
+    querystring = {"sportId": "1"}
+
+    headers = {
+        "x-rapidapi-key": "ff182b108amshf8e8d9cb53258dbp193014jsn90d493c12420",
+        "x-rapidapi-host": "all-sport-live-stream.p.rapidapi.com"
     }
-    return render(request, 'rapid/rapid_sport.html', context)
 
+    response = requests.get(url, headers=headers, params=querystring)
+
+    matches = []
+
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+
+        # Data is a list of sport blocks
+        if isinstance(data, list):
+            for sport in data:
+                match_list = sport.get("data")
+                if isinstance(match_list, list):
+                    for match in match_list:
+                        matches.append({
+                            'team_one': match.get('team_one_name', 'Unknown'),
+                            'team_two': match.get('team_two_name', 'Unknown'),
+                            'score': match.get('score', 'vs'),
+                            'start_time': match.get('start_time', 'Unknown Time'),
+                            'iframe_source': match.get('iframe_source') if match.get('iframe_source') != "MATCH_WILL_BEGIN_SOON" else None,
+                            'm3u8_source': match.get('m3u8_source') if match.get('m3u8_source') != "MATCH_WILL_BEGIN_SOON" else None
+                        })
+        else:
+            print("Unexpected data format: not a list")
+    else:
+        print(f"Failed to fetch data: {response.status_code}")
+
+    context = {'matches': matches}
+    return render(request, 'rapid/all_sport_api.html', context)

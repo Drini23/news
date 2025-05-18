@@ -187,8 +187,12 @@
                 <a class="btn btn-primary" href="{% url 'today_matches' %}" role="button">
                     <i class="fas fa-calendar-day"></i> Today's Matches
                 </a>
-                <a class="btn btn-primary pulse" href="{% url 'api' %}" role="button">
+                <a class="btn btn-primary pulse" href="{% url 'all_sport_api' %}" role="button">
                     <i class="fas fa-bolt"></i> Live Events
+                    <span class="live-badge">LIVE</span>
+                </a>
+                <a class="btn btn-primary pulse" href="{% url 'stream' %}" role="button">
+                    <i class="fas fa-bolt"></i> Live Events Top Matches
                     <span class="live-badge">LIVE</span>
                 </a>
                 <a class="btn btn-primary btn-highlight" href="{% url 'highlights' %}" role="button">

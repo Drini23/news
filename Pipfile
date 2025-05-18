@@ -23,6 +23,7 @@ channels-redis = "*"
 django-ratelimit = "*"
 google-api-python-client = "*"
 pytube = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

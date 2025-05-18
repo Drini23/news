@@ -1,0 +1,273 @@
+{% block content %}
+<div class="live-matches-container">
+    <header class="matches-header">
+        <div class="header-top">
+            <a href="/" class="home-button">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <h1 class="main-title">⚽ Live Matches</h1>
+        </div>
+        <p class="subtitle">Watch live football streams from around the world</p>
+    </header>
+
+    {% if matches %}
+    <div class="matches-grid">
+        {% for match in matches %}
+        <div class="match-card">
+            <div class="match-teams">
+                <span class="team team-home">{{ match.team_one }}</span>
+                <div class="match-score">
+                    <span class="score">{{ match.score|default:"vs" }}</span>
+                </div>
+                <span class="team team-away">{{ match.team_two }}</span>
+            </div>
+            
+            <div class="match-meta">
+                <div class="match-time">
+                    <i class="fas fa-clock"></i>
+                    {{ match.start_time }} • {{ match.start_time|date:"M d, Y" }}
+                </div>
+                
+                <div class="stream-buttons">
+                    {% if match.iframe_source %}
+                    <a href="{{ match.iframe_source }}" target="_blank" class="stream-btn iframe-btn">
+                        <i class="fas fa-tv"></i> Web Stream
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-matches">
+        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No matches" class="no-matches-icon">
+        <h3>No live matches currently available</h3>
+        <p>Check back later for upcoming matches</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --accent: #4895ef;
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --success: #4cc9f0;
+        --danger: #f72585;
+        --warning: #f8961e;
+        --info: #43aa8b;
+    }
+    
+    .live-matches-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+    }
+    
+    .matches-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+    
+    .header-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    
+    .home-button {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .home-button:hover {
+        background: var(--secondary);
+        transform: translateY(-50%) scale(1.05);
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+    
+    .matches-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .match-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .match-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    }
+    
+    .match-teams {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .team {
+        flex: 1;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .team-home {
+        color: var(--primary);
+        text-align: right;
+        padding-right: 1rem;
+    }
+    
+    .team-away {
+        color: var(--secondary);
+        text-align: left;
+        padding-left: 1rem;
+    }
+    
+    .match-score {
+        background: var(--light);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 700;
+        color: var(--dark);
+        min-width: 70px;
+    }
+    
+    .match-meta {
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding-top: 1rem;
+    }
+    
+    .match-time {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .stream-buttons {
+        display: flex;
+        gap: 0.8rem;
+    }
+    
+    .stream-btn {
+        flex: 1;
+        padding: 0.6rem;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .iframe-btn {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .iframe-btn:hover {
+        background: var(--secondary);
+    }
+    
+    .m3u8-btn {
+        background: var(--success);
+        color: white;
+    }
+    
+    .m3u8-btn:hover {
+        background: #3aa8d4;
+    }
+    
+    .no-matches {
+        text-align: center;
+        padding: 3rem 0;
+    }
+    
+    .no-matches-icon {
+        width: 100px;
+        opacity: 0.7;
+        margin-bottom: 1.5rem;
+    }
+    
+    .no-matches h3 {
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .no-matches p {
+        color: #6c757d;
+    }
+    
+    @media (max-width: 768px) {
+        .matches-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .main-title {
+            font-size: 2rem;
+        }
+        
+        .home-button {
+            position: relative;
+            margin-bottom: 1rem;
+            left: auto;
+            top: auto;
+            transform: none;
+            display: inline-flex;
+        }
+        
+        .header-top {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
