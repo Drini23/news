@@ -4,7 +4,9 @@ import pytz
 from urllib.parse import quote
 
 from datetime import date, datetime
-from football.api import football_api
+
+from football.settings import ALL_SPORT_API, NEWS_API, RAPID_API, FOOTBALL_API
+
 
 from django.shortcuts import render
 from django_ratelimit.decorators import ratelimit
@@ -41,7 +43,7 @@ logger = logging.getLogger(__name__)
 @ratelimit(key='ip', rate='10/m', method='GET', block=True)
 def today_matches(request):
     api_url = 'http://api.football-data.org/v4/matches'
-    headers = {'X-Auth-Token': football_api}
+    headers = {'X-Auth-Token': FOOTBALL_API}
     
     
     # Check if matches are cached
@@ -107,78 +109,9 @@ def fetch_team_details(team_id, headers):
         return None
     
 
-API_KEY = "AIzaSyCOXlN5-3JK95GMjuKo5kpZwqUrmi5DJWI"
-SEARCH_QUERY = (
-    "Premier League Highlights | La Liga Highlights | Bundesliga Highlights | Serie A Highlights | "
-    "Ligue 1 Highlights | Champions League Highlights | Europa League Highlights | FIFA World Cup Highlights | UEFA Euro Highlights"
-)
-MAX_RESULTS = 15  # Fetch more videos
-
-def get_youtube_videos():
-    """Fetch highlights from YouTube API"""
-    url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&q={SEARCH_QUERY}&type=video&key={API_KEY}&maxResults={MAX_RESULTS}"
-    response = requests.get(url)
-    
-    if response.status_code == 200:
-        data = response.json()
-        videos = [
-            {"title": item["snippet"]["title"], "videoId": item["id"]["videoId"]}
-            for item in data.get("items", [])
-        ]
-        return videos
-    return []
-
-def fetch_new_video(request):
-    """Return a new video when a user removes one"""
-    existing_videos = request.GET.getlist("existing_videos[]")  # Get list of already displayed videos
-    videos = get_youtube_videos()
-
-    # Find a video that is not already displayed
-    new_video = next((v for v in videos if v["videoId"] not in existing_videos), None)
-
-    if new_video:
-        return JsonResponse(new_video)
-    return JsonResponse({"error": "No new videos found"}, status=404)
 
 
 
 
 
-def highlights(request):
-    """Render the highlights page"""
-    videos = get_youtube_videos()
-    return render(request, "blog/highlights.html", {"data": videos})
 
-
-
-def api(request):
-    API_KEY = "AIzaSyCOXlN5-3JK95GMjuKo5kpZwqUrmi5DJWI"  # Replace with your actual API key
-    SEARCH_QUERY = request.GET.get("q", "Live Football Match")  # More specific search
-    MAX_RESULTS = 20  # Number of results to fetch
-
-    # Construct the API URL with better filtering
-    url = (
-        f"https://www.googleapis.com/youtube/v3/search"
-        f"?part=snippet&q={SEARCH_QUERY}"
-        f"&type=video&eventType=live"
-        f"&videoCategoryId=17"  # Sports category
-        f"&key={API_KEY}&maxResults={MAX_RESULTS}"
-    )
-
-    # Fetch data from the YouTube API
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-
-        # Filter out fake matches (optional)
-        real_matches = []
-        for item in data.get("items", []):
-            title = item["snippet"]["title"].lower()
-            description = item["snippet"]["description"].lower()
-
-            if any(keyword in title for keyword in ["live", "football", "match", "league"]):
-                real_matches.append(item)
-
-        return render(request, "blog/api.html", {"data": {"items": real_matches}, "query": SEARCH_QUERY})
-
-    return render(request, "blog/api.html", {"error": "Failed to fetch data from YouTube API."})

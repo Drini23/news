@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=BASE_DIR / ".env")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b%lm&fxx-0!nob4)edg$*du+bv@^ro3)wgv*qom28mv564jeth'
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+FOOTBALL_API = os.getenv("FOOTBALL_API")
+NEWS_API = os.getenv("NEWS_API")
+RAPID_API = os.getenv("RAPID_API")
+ALL_SPORT_API = os.getenv("ALL_SPORT_API")
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 ALLOWED_HOSTS = ['*']
 

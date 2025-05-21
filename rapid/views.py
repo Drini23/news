@@ -6,6 +6,8 @@ from googletrans import Translator
 from django.shortcuts import render
 from datetime import datetime, timedelta
 
+from football.settings import ALL_SPORT_API
+
 
 def fetch_livekoora_matches():
     base_url = "https://livekoora.info/"
@@ -59,7 +61,7 @@ def all_sport_api(request):
     querystring = {"sportId": "1"}
 
     headers = {
-        "x-rapidapi-key": "ff182b108amshf8e8d9cb53258dbp193014jsn90d493c12420",
+        "x-rapidapi-key": ALL_SPORT_API,
         "x-rapidapi-host": "all-sport-live-stream.p.rapidapi.com"
     }
 

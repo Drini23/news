@@ -1,7 +1,7 @@
 football_api = 'b4514c7269ac429687a8f80cad6b9dfe'
 news_api = 'c432527482b94f29b6075da87fb8e3c0'
 rapid_api = "34b0bd35cc285d9fd875c441ab9e6920"
-
+"""
 import requests
 import json
 
@@ -28,3 +28,4 @@ if response.status_code == 200:
 else:
     print(f"Failed to fetch data. Status code: {response.status_code}")
     print("Error response:", response.text)  # Print error details from the API
+"""

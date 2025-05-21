@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import requests
-from football.api import news_api
+from football.settings import NEWS_API
 
 
 def get_news(api_key, query='football'):
@@ -21,7 +21,7 @@ def get_news(api_key, query='football'):
 
 
 def football_news_view(request):
-    api_key = news_api
+    api_key = NEWS_API
     query = request.GET.get('query', 'football')  # Default to 'football' if no query is provided
     football_news = get_news(api_key, query)
     context = {
