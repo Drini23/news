@@ -33,7 +33,8 @@ httplib2==0.22.0
 httpx==0.13.3
 hyperframe==5.2.0
 hyperlink==21.0.0
-idna==3.7
+idna==2.10
+
 incremental==24.7.2
 msgpack==1.1.0
 packaging==24.1
