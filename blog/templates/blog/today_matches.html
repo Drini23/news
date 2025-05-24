@@ -17,57 +17,27 @@
             --text-light: #f8fafc;
         }
 
-        @media (max-width: 576px) {
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    .table td,
-    .table th {
-        padding: 10px 5px;
-        font-size: 0.75rem;
-    }
-
-    .watch-btn, .home-btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-    }
-
-    .team-crest {
-        width: 20px;
-        height: 20px;
-    }
-
-    .live-indicator {
-        font-size: 0.65rem;
-        padding: 3px 7px;
-    }
-
-    .team-cell {
-        flex-direction: column;
-        gap: 4px;
-    }
-}
-        
         body {
             background-color: var(--dark-bg);
             color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1200px;
             padding-top: 2rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
-        
+
         h1 {
             text-align: center;
             margin-bottom: 2rem;
             font-weight: 700;
             color: white;
         }
-        
+
         .live-indicator {
             display: inline-block;
             background-color: var(--accent-red);
@@ -80,31 +50,25 @@
             animation: pulse 1.5s infinite;
             vertical-align: middle;
         }
-        
+
         @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-            }
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
         }
-        
+
         .matches-table {
             background-color: var(--card-bg);
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 2rem;
         }
-        
+
         .table {
             color: var(--text-light);
             margin-bottom: 0;
         }
-        
+
         .table thead th {
             background-color: var(--primary-blue);
             color: white;
@@ -112,44 +76,44 @@
             padding: 15px;
             text-align: center;
         }
-        
+
         .table td {
             padding: 15px;
             vertical-align: middle;
             text-align: center;
         }
-        
+
         .team-cell {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
-        
+
         .team-crest {
             width: 30px;
             height: 30px;
             object-fit: contain;
         }
-        
+
         .postponed {
             background-color: var(--accent-yellow);
             color: #000;
         }
-        
+
         .finished {
             background-color: var(--accent-green);
             color: #000;
         }
-        
+
         .in_play {
             background-color: rgba(220, 38, 38, 0.2);
         }
-        
+
         .timed {
             background-color: rgba(59, 130, 246, 0.2);
         }
-        
+
         .watch-btn {
             background-color: var(--accent-red);
             color: white;
@@ -158,12 +122,12 @@
             padding: 8px 15px;
             transition: all 0.2s ease;
         }
-        
+
         .watch-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
         }
-        
+
         .home-btn {
             display: block;
             width: 200px;
@@ -176,10 +140,44 @@
             text-align: center;
             transition: all 0.2s ease;
         }
-        
+
         .home-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile Enhancements */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .table td,
+            .table th {
+                padding: 10px 5px;
+                font-size: 0.75rem;
+            }
+
+            .watch-btn,
+            .home-btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            .team-crest {
+                width: 20px;
+                height: 20px;
+            }
+
+            .live-indicator {
+                font-size: 0.65rem;
+                padding: 3px 7px;
+            }
+
+            .team-cell {
+                flex-direction: column;
+                gap: 4px;
+            }
         }
     </style>
 </head>
