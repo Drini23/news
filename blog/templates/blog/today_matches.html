@@ -16,6 +16,38 @@
             --accent-yellow: #f59e0b;
             --text-light: #f8fafc;
         }
+
+        @media (max-width: 576px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 10px 5px;
+        font-size: 0.75rem;
+    }
+
+    .watch-btn, .home-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .team-crest {
+        width: 20px;
+        height: 20px;
+    }
+
+    .live-indicator {
+        font-size: 0.65rem;
+        padding: 3px 7px;
+    }
+
+    .team-cell {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
         
         body {
             background-color: var(--dark-bg);
@@ -158,7 +190,7 @@
             <span class="live-indicator">LIVE</span>
         </h1>
         
-        <div class="matches-table">
+        <div class="matches-table table-responsive">
             <table class="table">
                 <thead>
                     <tr>
