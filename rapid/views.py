@@ -52,8 +52,6 @@ def live_streams_view(request):
     return render(request, 'rapid/stream.html', {'matches': matches, 'day': 'Today'})
 
 
-from django.shortcuts import render
-import requests
 
 def all_sport_api(request):
     url = "https://all-sport-live-stream.p.rapidapi.com/api/v2/br/all-live-stream"
@@ -94,3 +92,6 @@ def all_sport_api(request):
 
     context = {'matches': matches}
     return render(request, 'rapid/all_sport_api.html', context)
+
+def highlights(request):
+    return render(request, 'rapid/highlights.html')
