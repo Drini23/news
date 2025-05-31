@@ -5,7 +5,7 @@ from urllib.parse import quote
 
 from datetime import date, datetime
 
-from football.settings import ALL_SPORT_API, NEWS_API, RAPID_API, FOOTBALL_API
+from football.settings import  NEWS_API, RAPID_API, FOOTBALL_API
 
 
 from django.shortcuts import render
