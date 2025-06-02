@@ -3,336 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Football Matches | Today's Fixtures</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Live Scores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --dark-bg: #0f172a;
-            --card-bg: #1e293b;
-            --primary-blue: #1e3a8a;
-            --accent-red: #dc2626;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --text-light: #f8fafc;
-        }
-
         body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
-            max-width: 1200px;
-            padding-top: 2rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 2rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .live-indicator {
-            display: inline-block;
-            background-color: var(--accent-red);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-left: 10px;
-            animation: pulse 1.5s infinite;
-            vertical-align: middle;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-        }
-
-        .matches-table {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .table {
-            color: var(--text-light);
-            margin-bottom: 0;
-        }
-
-        .table thead th {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .table td {
-            padding: 15px;
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        .team-cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .team-crest {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-        }
-
-        .postponed {
-            background-color: var(--accent-yellow);
-            color: #000;
-        }
-
-        .finished {
-            background-color: var(--accent-green);
-            color: #000;
-        }
-
-        .in_play {
-            background-color: rgba(220, 38, 38, 0.2);
-        }
-
-        .timed {
-            background-color: rgba(59, 130, 246, 0.2);
-        }
-
-        .watch-btn {
-            background-color: var(--accent-red);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 15px;
-            transition: all 0.2s ease;
-        }
-
-        .watch-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
         .home-btn {
-            display: block;
-            width: 200px;
-            margin: 0 auto;
-            background-color: var(--primary-blue);
+            display: inline-block;
+            background-color: #007bff;
             color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 12px;
-            text-align: center;
-            transition: all 0.2s ease;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
         }
 
         .home-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: #0056b3;
         }
 
-        /* Mobile Enhancements */
-        @media (max-width: 576px) {
-            h1 {
-                font-size: 1.5rem;
-            }
+        .text-center {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-            .table td,
-            .table th {
-                padding: 10px 5px;
-                font-size: 0.75rem;
-            }
-
-            .watch-btn,
-            .home-btn {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-            }
-
-            .team-crest {
-                width: 20px;
-                height: 20px;
-            }
-
-            .live-indicator {
-                font-size: 0.65rem;
-                padding: 3px 7px;
-            }
-
-            .team-cell {
-                flex-direction: column;
-                gap: 4px;
-            }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 760px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>
-            <i class="fas fa-futbol"></i> Today's Football Matches
-            <span class="live-indicator">LIVE</span>
-        </h1>
-        
-        <div class="matches-table table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Home Team</th>
-                        <th>Away Team</th>
-                        <th>Status</th>
-                        <th>Score</th>
-                        <th>Watch</th>
-                    </tr>
-                </thead>
-                <tbody id="matches-body">
-                    {% if matches %}
-                    {% for match in matches %}
-                    <tr class="{{ match.status|lower }}" id="match-{{ match.id }}">
-                        <td class="match-time">{{ match.formatted_time }}</td>
-                        <td>
-                            <div class="team-cell">
-                                <img src="{{ match.homeTeam.crest }}" alt="{{ match.homeTeam.name }}" class="team-crest">
-                                <span class="home-team">{{ match.homeTeam.name }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="team-cell">
-                                <img src="{{ match.awayTeam.crest }}" alt="{{ match.awayTeam.name }}" class="team-crest">
-                                <span class="away-team">{{ match.awayTeam.name }}</span>
-                            </div>
-                        </td>
-                        <td class="match-status">
-                            {{ match.status }}
-                            {% if match.status == 'IN_PLAY' %}
-                            <span class="live-indicator">LIVE</span>
-                            {% endif %}
-                        </td>
-                        <td class="match-score">
-                            {% if match.status == 'FINISHED' or match.status == 'IN_PLAY' %}
-                                {{ match.home_team_score }} - {{ match.away_team_score }}
-                            {% else %}
-                                - : -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if match.stream_url %}
-                            <a href="{{ match.stream_url }}" class="watch-btn" target="_blank">
-                                <i class="fas fa-play"></i> Live
-                            </a>
-                            {% else %}
-                            <span>No stream</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="6" style="text-align: center;">
-                            <i class="far fa-futbol"></i>
-                            <p>No matches scheduled for today</p>
-                        </td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+        <div class="text-center">
+            <a href="{% url 'home' %}" class="home-btn">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
         </div>
-        
-        <a href="{% url 'home' %}" class="home-btn">
-            <i class="fas fa-home"></i> Back to Home
-        </a>
+        <iframe 
+            src="https://www.scorebat.com/embed/livescore/?token=MjE0Mzg2XzE3NDg4OTI3NDhfYjY2OTczYTA1OGZhMDEwMWZhOGQ4NDg3YzQyMmUyYzRkMTY0YzllYw==" 
+            allowfullscreen 
+            allow="autoplay; fullscreen" 
+            class="_scorebatEmbeddedPlayer_">
+        </iframe>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-        // WebSocket connection
-        const socket = new WebSocket(
-            (window.location.protocol === "https:" ? "wss://" : "ws://") + 
-            window.location.host + "/ws/matches/"
-        );
-    
-        socket.onopen = function(e) {
-            console.log("[WebSocket] Connection established");
-        };
-    
-        socket.onmessage = function(event) {
-            console.log("[WebSocket] Data received:", event.data);
-            try {
-                const data = JSON.parse(event.data);
-                
-                if (data.matches && Array.isArray(data.matches)) {
-                    data.matches.forEach(matchData => {
-                        // Find the matching row by team names
-                        const rows = document.querySelectorAll("#matches-body tr");
-                        
-                        rows.forEach(row => {
-                            const homeTeam = row.querySelector(".home-team")?.textContent.trim();
-                            const awayTeam = row.querySelector(".away-team")?.textContent.trim();
-                            
-                            if (homeTeam === matchData.home_team && awayTeam === matchData.away_team) {
-                                // Update match time
-                                const timeCell = row.querySelector(".match-time");
-                                if (timeCell) timeCell.textContent = matchData.match_time;
-                                
-                                // Update status
-                                const statusCell = row.querySelector(".match-status");
-                                if (statusCell) {
-                                    statusCell.innerHTML = matchData.match_status;
-                                    if (matchData.match_status === 'IN_PLAY') {
-                                        statusCell.innerHTML += ' <span class="live-indicator">LIVE</span>';
-                                    }
-                                }
-                                
-                                // Update score
-                                const scoreCell = row.querySelector(".match-score");
-                                if (scoreCell) {
-                                    const homeScore = matchData.home_score ?? 0;
-                                    const awayScore = matchData.away_score ?? 0;
-                                    scoreCell.textContent = `${homeScore} - ${awayScore}`;
-                                }
-                                
-                                // Update row class
-                                row.className = ''; // Clear all classes
-                                if (matchData.match_status) {
-                                    const statusClass = matchData.match_status.toLowerCase().replace(' ', '_');
-                                    row.classList.add(statusClass);
-                                }
-                            }
-                        });
-                    });
-                }
-            } catch (error) {
-                console.error("[WebSocket] Error processing message:", error);
-            }
-        };
-    
-        socket.onclose = function(event) {
-            if (event.wasClean) {
-                console.log(`[WebSocket] Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
-            } else {
-                console.log('[WebSocket] Connection died');
-            }
-        };
-    
-        socket.onerror = function(error) {
-            console.log(`[WebSocket] Error: ${error.message}`);
-        };
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = 'https://www.scorebat.com/embed/embed.js?v=arrv';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'scorebat-jssdk'));
     </script>
 </body>
-</html> 
+</html>
