@@ -159,7 +159,7 @@
         
         .news-image {
             max-width: 100%;
-            height: auto;
+            height: 200px;
             border-radius: 8px;
             margin: 15px 0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -294,10 +294,11 @@
                     <li class="news-item">
                         <div class="news-content">
                             <h2 class="news-title">{{ article.title }}</h2>
-                            {% if article.image %}
-                                <img src="{{ article.image }}" alt="{{ article.title }}" class="news-image">
+                            {% if article.urlToImage %}
+                                <img src="{{ article.urlToImage }}" alt="{{ article.title }}" class="news-image">
                             {% endif %}
                             <p class="news-desc">{{ article.description }}</p>
+                            <p class="news-desc">{{ article.publishedAt }}</p>
                             <a href="{{ article.url }}" class="read-more" target="_blank">
                                 Read full story <i class="fas fa-arrow-right"></i>
                             </a>
