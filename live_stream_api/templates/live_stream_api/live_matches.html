@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Football Matches</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .video-player-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .video-player-section.active {
+            display: block;
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .player-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .close-player {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .close-player:hover {
+            background: #ee5a6f;
+            transform: translateY(-2px);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        .loading-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b6b;
+            font-size: 1em;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .try-direct-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .direct-link-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .direct-link-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .match-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .teams {
+            font-size: 1.3em;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .league {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .streams-section {
+            margin-top: 20px;
+        }
+
+        .streams-title {
+            font-size: 1.1em;
+            color: #34495e;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .stream-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .play-button:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 12px solid white;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        .no-streams {
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .matches-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .player-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>⚽ Live Football Matches</h1>
+       <h1> <a href="{% url 'home' %}" style="color: white; text-decoration: none; display: inline-block; margin-bottom: 20px;">
+            &larr; Back to Home </a></h1>
+        
+
+        <!-- Video Player Section -->
+        <div id="videoPlayer" class="video-player-section">
+            <div class="player-header">
+                <div class="player-title" id="playerTitle"></div>
+                <button class="close-player" onclick="closePlayer()">Close Player</button>
+            </div>
+            <div class="video-container" id="videoContainer">
+                <div class="loading-message" id="loadingMessage">Loading stream...</div>
+                <video id="videoElement" controls autoplay></video>
+                <iframe id="streamFrame" style="display: none;" allowfullscreen allow="autoplay"></iframe>
+            </div>
+            <div class="try-direct-link" id="directLinkSection" style="display: none;">
+                <p style="margin-bottom: 10px; color: #666;">Can't play embedded? Try opening directly:</p>
+                <a id="directLink" href="#" target="_blank" class="direct-link-btn">Open in New Tab</a>
+            </div>
+        </div>
+
+        <!-- Matches Grid -->
+        <div class="matches-grid">
+            {% for match in matches %}
+            <div class="match-card">
+                <div class="match-header">
+                    <div class="teams">
+                        {{ match.home_team }} vs {{ match.away_team }}
+                    </div>
+                    <span class="league">{{ match.league }}</span>
+                </div>
+
+                <div class="streams-section">
+                    <div class="streams-title">Available Streams:</div>
+                    {% if match.stream_servers %}
+                        <div class="stream-buttons">
+                            {% for server in match.stream_servers %}
+                            <button class="play-button"
+                                    onclick="playStream('{{ server.url }}', '{{ match.home_team }} vs {{ match.away_team }}', '{{ server.name }}')">
+                                <div class="play-icon"></div>
+                                Watch on {{ server.name }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-streams">No streams available</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-streams" style="grid-column: 1 / -1;">
+                No live matches available at the moment
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        let currentHls = null;
+
+        function playStream(url, matchTitle, serverName) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoElement = document.getElementById('videoElement');
+            const streamFrame = document.getElementById('streamFrame');
+            const playerTitle = document.getElementById('playerTitle');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const directLinkSection = document.getElementById('directLinkSection');
+            const directLink = document.getElementById('directLink');
+            const videoContainer = document.getElementById('videoContainer');
+
+            // Reset previous stream
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+
+            // Set title
+            playerTitle.textContent = `${matchTitle} - ${serverName}`;
+
+            // Setup direct link
+            directLink.href = url;
+            directLinkSection.style.display = 'block';
+
+            // Show loading
+            loadingMessage.style.display = 'block';
+            loadingMessage.textContent = 'Loading stream...';
+            videoElement.style.display = 'none';
+            streamFrame.style.display = 'none';
+
+            // Show the player
+            videoPlayer.classList.add('active');
+            videoPlayer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Try different methods to play the stream
+            tryPlayStream(url, videoElement, streamFrame, loadingMessage, videoContainer);
+        }
+
+        function tryPlayStream(url, videoElement, streamFrame, loadingMessage, videoContainer) {
+            // Method 1: Try HLS.js for .m3u8 streams
+            if (url.includes('.m3u8') && Hls.isSupported()) {
+                currentHls = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                });
+
+                currentHls.loadSource(url);
+                currentHls.attachMedia(videoElement);
+
+                currentHls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    loadingMessage.style.display = 'none';
+                    videoElement.style.display = 'block';
+                    videoElement.play().catch(e => {
+                        console.error('Play failed:', e);
+                        showError(videoContainer, 'Unable to play stream. Try opening in new tab.');
+                    });
+                });
+
+                currentHls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        console.error('HLS Error:', data);
+                        tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+                    }
+                });
+            }
+            // Method 2: Try native video support
+            else if (videoElement.canPlayType('application/x-mpegURL') ||
+                     videoElement.canPlayType('video/mp4')) {
+                videoElement.src = url;
+                videoElement.style.display = 'block';
+
+                videoElement.onloadedmetadata = function() {
+                    loadingMessage.style.display = 'none';
+                    videoElement.play().catch(e => {
+                        console.error('Play failed:', e);
+                        tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+                    });
+                };
+
+                videoElement.onerror = function() {
+                    tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+                };
+            }
+            // Method 3: Try iframe
+            else {
+                tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+            }
+        }
+
+        function tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer) {
+            videoElement.style.display = 'none';
+            streamFrame.style.display = 'block';
+            streamFrame.src = url;
+
+            // Hide loading after a delay
+            setTimeout(() => {
+                loadingMessage.style.display = 'none';
+            }, 2000);
+
+            // Check if iframe loads successfully
+            streamFrame.onerror = function() {
+                showError(videoContainer, 'Cannot embed this stream. Please use "Open in New Tab" button below.');
+            };
+
+            // Listen for iframe load
+            streamFrame.onload = function() {
+                loadingMessage.style.display = 'none';
+            };
+        }
+
+        function showError(container, message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `⚠️ ${message}`;
+            container.appendChild(errorDiv);
+
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function closePlayer() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoElement = document.getElementById('videoElement');
+            const streamFrame = document.getElementById('streamFrame');
+
+            // Stop HLS
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+
+            // Stop video and iframe
+            videoElement.pause();
+            videoElement.src = '';
+            streamFrame.src = '';
+            
+            // Hide the player
+            videoPlayer.classList.remove('active');
+        }
+    </script>
+</body>
+</html>

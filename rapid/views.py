@@ -16,6 +16,7 @@ def fetch_livekoora_matches():
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
+    
 
     soup = BeautifulSoup(response.text, 'html.parser')
     translator = Translator()
