@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -259,209 +259,215 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>⚽ Live Football Matches</h1>
-       <h1> <a href="{% url 'home' %}" style="color: white; text-decoration: none; display: inline-block; margin-bottom: 20px;">
-            &larr; Back to Home </a></h1>
-        
+<div class="container">
+    <h1>⚽ Live Football Matches</h1>
+    <h1><a href="{%url 'home'%}" class="home-link">🏠 Home</a></h1 style=color; red>
 
-        <!-- Video Player Section -->
-        <div id="videoPlayer" class="video-player-section">
-            <div class="player-header">
-                <div class="player-title" id="playerTitle"></div>
-                <button class="close-player" onclick="closePlayer()">Close Player</button>
-            </div>
-            <div class="video-container" id="videoContainer">
-                <div class="loading-message" id="loadingMessage">Loading stream...</div>
-                <video id="videoElement" controls autoplay></video>
-                <iframe id="streamFrame" style="display: none;" allowfullscreen allow="autoplay"></iframe>
-            </div>
-            <div class="try-direct-link" id="directLinkSection" style="display: none;">
-                <p style="margin-bottom: 10px; color: #666;">Can't play embedded? Try opening directly:</p>
-                <a id="directLink" href="#" target="_blank" class="direct-link-btn">Open in New Tab</a>
-            </div>
+    <!-- Video Player Section -->
+    <div id="videoPlayer" class="video-player-section">
+        <div class="player-header">
+            <div class="player-title" id="playerTitle"></div>
+            <button class="close-player" onclick="closePlayer()">Close Player</button>
         </div>
-
-        <!-- Matches Grid -->
-        <div class="matches-grid">
-            {% for match in matches %}
-            <div class="match-card">
-                <div class="match-header">
-                    <div class="teams">
-                        {{ match.home_team }} vs {{ match.away_team }}
-                    </div>
-                    <span class="league">{{ match.league }}</span>
-                </div>
-
-                <div class="streams-section">
-                    <div class="streams-title">Available Streams:</div>
-                    {% if match.stream_servers %}
-                        <div class="stream-buttons">
-                            {% for server in match.stream_servers %}
-                            <button class="play-button"
-                                    onclick="playStream('{{ server.url }}', '{{ match.home_team }} vs {{ match.away_team }}', '{{ server.name }}')">
-                                <div class="play-icon"></div>
-                                Watch on {{ server.name }}
-                            </button>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="no-streams">No streams available</div>
-                    {% endif %}
-                </div>
-            </div>
-            {% empty %}
-            <div class="no-streams" style="grid-column: 1 / -1;">
-                No live matches available at the moment
-            </div>
-            {% endfor %}
+        <div class="video-container" id="videoContainer">
+            <div class="loading-message" id="loadingMessage">Loading stream...</div>
+            <video id="videoElement" controls autoplay></video>
+            <iframe id="streamFrame" style="display: none;" allowfullscreen allow="autoplay"></iframe>
+        </div>
+        <div class="try-direct-link" id="directLinkSection" style="display: none;">
+            <p style="margin-bottom: 10px; color: #666;">Can't play embedded? Try opening directly:</p>
+            <a id="directLink" href="#" target="_blank" class="direct-link-btn">Open in New Tab</a>
         </div>
     </div>
 
-    <script>
-        let currentHls = null;
+    <!-- Matches Grid -->
+    <div class="matches-grid">
+        {% for match in matches %}
+        <div class="match-card">
+            <div class="match-header">
+                <div class="teams">
+                    {{ match.home_team }} vs {{ match.away_team }}
+                </div>
+                <div class="logos" style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+                    <img src="{{ match.home_team_logo }}" alt="{{ match.home_team }} logo" class="team-logo"
+                         style="width: 60px; height: 60px;">
+                    <span>vs</span>
+                    <img src="{{ match.away_team_logo }}" alt="{{ match.away_team }} logo" class="team-logo"
+                         style="width: 60px; height: 60px;">
+                </div>
+                <span class="league">{{ match.league }}</span>
+            </div>
 
-        function playStream(url, matchTitle, serverName) {
-            const videoPlayer = document.getElementById('videoPlayer');
-            const videoElement = document.getElementById('videoElement');
-            const streamFrame = document.getElementById('streamFrame');
-            const playerTitle = document.getElementById('playerTitle');
-            const loadingMessage = document.getElementById('loadingMessage');
-            const directLinkSection = document.getElementById('directLinkSection');
-            const directLink = document.getElementById('directLink');
-            const videoContainer = document.getElementById('videoContainer');
 
-            // Reset previous stream
-            if (currentHls) {
-                currentHls.destroy();
-                currentHls = null;
-            }
+            <div class="streams-section">
+                <div class="streams-title">Available Streams:</div>
+                {% if match.stream_servers %}
+                <div class="stream-buttons">
+                    {% for server in match.stream_servers %}
+                    <button class="play-button"
+                            onclick="playStream('{{ server.url }}', '{{ match.home_team }} vs {{ match.away_team }}', '{{ server.name }}')">
+                        <div class="play-icon"></div>
+                        Watch on {{ server.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-streams">No streams available</div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-streams" style="grid-column: 1 / -1;">
+            No live matches available at the moment
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
-            // Set title
-            playerTitle.textContent = `${matchTitle} - ${serverName}`;
+<script>
+    let currentHls = null;
 
-            // Setup direct link
-            directLink.href = url;
-            directLinkSection.style.display = 'block';
+    function playStream(url, matchTitle, serverName) {
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoElement = document.getElementById('videoElement');
+        const streamFrame = document.getElementById('streamFrame');
+        const playerTitle = document.getElementById('playerTitle');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const directLinkSection = document.getElementById('directLinkSection');
+        const directLink = document.getElementById('directLink');
+        const videoContainer = document.getElementById('videoContainer');
 
-            // Show loading
-            loadingMessage.style.display = 'block';
-            loadingMessage.textContent = 'Loading stream...';
-            videoElement.style.display = 'none';
-            streamFrame.style.display = 'none';
-
-            // Show the player
-            videoPlayer.classList.add('active');
-            videoPlayer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-            // Try different methods to play the stream
-            tryPlayStream(url, videoElement, streamFrame, loadingMessage, videoContainer);
+        // Reset previous stream
+        if (currentHls) {
+            currentHls.destroy();
+            currentHls = null;
         }
 
-        function tryPlayStream(url, videoElement, streamFrame, loadingMessage, videoContainer) {
-            // Method 1: Try HLS.js for .m3u8 streams
-            if (url.includes('.m3u8') && Hls.isSupported()) {
-                currentHls = new Hls({
-                    enableWorker: true,
-                    lowLatencyMode: true,
-                });
+        // Set title
+        playerTitle.textContent = `${matchTitle} - ${serverName}`;
 
-                currentHls.loadSource(url);
-                currentHls.attachMedia(videoElement);
+        // Setup direct link
+        directLink.href = url;
+        directLinkSection.style.display = 'block';
 
-                currentHls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    loadingMessage.style.display = 'none';
-                    videoElement.style.display = 'block';
-                    videoElement.play().catch(e => {
-                        console.error('Play failed:', e);
-                        showError(videoContainer, 'Unable to play stream. Try opening in new tab.');
-                    });
-                });
+        // Show loading
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = 'Loading stream...';
+        videoElement.style.display = 'none';
+        streamFrame.style.display = 'none';
 
-                currentHls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        console.error('HLS Error:', data);
-                        tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
-                    }
-                });
-            }
-            // Method 2: Try native video support
-            else if (videoElement.canPlayType('application/x-mpegURL') ||
-                     videoElement.canPlayType('video/mp4')) {
-                videoElement.src = url;
+        // Show the player
+        videoPlayer.classList.add('active');
+        videoPlayer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Try different methods to play the stream
+        tryPlayStream(url, videoElement, streamFrame, loadingMessage, videoContainer);
+    }
+
+    function tryPlayStream(url, videoElement, streamFrame, loadingMessage, videoContainer) {
+        // Method 1: Try HLS.js for .m3u8 streams
+        if (url.includes('.m3u8') && Hls.isSupported()) {
+            currentHls = new Hls({
+                enableWorker: true,
+                lowLatencyMode: true,
+            });
+
+            currentHls.loadSource(url);
+            currentHls.attachMedia(videoElement);
+
+            currentHls.on(Hls.Events.MANIFEST_PARSED, function() {
+                loadingMessage.style.display = 'none';
                 videoElement.style.display = 'block';
+                videoElement.play().catch(e => {
+                    console.error('Play failed:', e);
+                    showError(videoContainer, 'Unable to play stream. Try opening in new tab.');
+                });
+            });
 
-                videoElement.onloadedmetadata = function() {
-                    loadingMessage.style.display = 'none';
-                    videoElement.play().catch(e => {
-                        console.error('Play failed:', e);
-                        tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
-                    });
-                };
-
-                videoElement.onerror = function() {
+            currentHls.on(Hls.Events.ERROR, function(event, data) {
+                if (data.fatal) {
+                    console.error('HLS Error:', data);
                     tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
-                };
-            }
-            // Method 3: Try iframe
-            else {
-                tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
-            }
-        }
-
-        function tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer) {
-            videoElement.style.display = 'none';
-            streamFrame.style.display = 'block';
-            streamFrame.src = url;
-
-            // Hide loading after a delay
-            setTimeout(() => {
-                loadingMessage.style.display = 'none';
-            }, 2000);
-
-            // Check if iframe loads successfully
-            streamFrame.onerror = function() {
-                showError(videoContainer, 'Cannot embed this stream. Please use "Open in New Tab" button below.');
-            };
-
-            // Listen for iframe load
-            streamFrame.onload = function() {
-                loadingMessage.style.display = 'none';
-            };
-        }
-
-        function showError(container, message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.innerHTML = `⚠️ ${message}`;
-            container.appendChild(errorDiv);
-
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.remove();
                 }
-            }, 5000);
+            });
         }
+        // Method 2: Try native video support
+        else if (videoElement.canPlayType('application/x-mpegURL') ||
+                 videoElement.canPlayType('video/mp4')) {
+            videoElement.src = url;
+            videoElement.style.display = 'block';
 
-        function closePlayer() {
-            const videoPlayer = document.getElementById('videoPlayer');
-            const videoElement = document.getElementById('videoElement');
-            const streamFrame = document.getElementById('streamFrame');
+            videoElement.onloadedmetadata = function() {
+                loadingMessage.style.display = 'none';
+                videoElement.play().catch(e => {
+                    console.error('Play failed:', e);
+                    tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+                });
+            };
 
-            // Stop HLS
-            if (currentHls) {
-                currentHls.destroy();
-                currentHls = null;
+            videoElement.onerror = function() {
+                tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+            };
+        }
+        // Method 3: Try iframe
+        else {
+            tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer);
+        }
+    }
+
+    function tryIframe(url, videoElement, streamFrame, loadingMessage, videoContainer) {
+        videoElement.style.display = 'none';
+        streamFrame.style.display = 'block';
+        streamFrame.src = url;
+
+        // Hide loading after a delay
+        setTimeout(() => {
+            loadingMessage.style.display = 'none';
+        }, 2000);
+
+        // Check if iframe loads successfully
+        streamFrame.onerror = function() {
+            showError(videoContainer, 'Cannot embed this stream. Please use "Open in New Tab" button below.');
+        };
+
+        // Listen for iframe load
+        streamFrame.onload = function() {
+            loadingMessage.style.display = 'none';
+        };
+    }
+
+    function showError(container, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `⚠️ ${message}`;
+        container.appendChild(errorDiv);
+
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.remove();
             }
+        }, 5000);
+    }
 
-            // Stop video and iframe
-            videoElement.pause();
-            videoElement.src = '';
-            streamFrame.src = '';
-            
-            // Hide the player
-            videoPlayer.classList.remove('active');
+    function closePlayer() {
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoElement = document.getElementById('videoElement');
+        const streamFrame = document.getElementById('streamFrame');
+
+        // Stop HLS
+        if (currentHls) {
+            currentHls.destroy();
+            currentHls = null;
         }
-    </script>
+
+        // Stop video and iframe
+        videoElement.pause();
+        videoElement.src = '';
+        streamFrame.src = '';
+
+        // Hide the player
+        videoPlayer.classList.remove('active');
+    }
+</script>
 </body>
 </html>

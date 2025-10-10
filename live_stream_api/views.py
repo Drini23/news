@@ -45,7 +45,11 @@ def live_matches(request):
                 "home_team": match.get("home_team_name"),
                 "away_team": match.get("away_team_name"),
                 "league": match.get("league_name"),
-                "stream_servers": stream_servers
+                "stream_servers": stream_servers,
+                "home_team_logo": match.get("home_team_logo"),
+                "away_team_logo": match.get("away_team_logo"),
+                "status": match.get("match.status")
+
             })
 
         page += 1  
