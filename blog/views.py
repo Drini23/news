@@ -40,7 +40,7 @@ def fetch_streaming_url(match_id, api_key):
 
 logger = logging.getLogger(__name__)
 
-@ratelimit(key='ip', rate='10/m', method='GET', block=True)
+#@ratelimit(key='ip', rate='10/m', method='GET', block=True)
 def today_matches(request):
     api_url = 'http://api.football-data.org/v4/matches'
     headers = {'X-Auth-Token': FOOTBALL_API}
