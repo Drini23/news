@@ -151,6 +151,16 @@
             font-weight: bold;
             animation: pulse 1.5s infinite;
         }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: white;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
         
         @media (max-width: 768px) {
             .btn-group-custom {
@@ -177,73 +187,75 @@
     <div class="container py-5">
         <div class="jumbotron text-center">
             <h1 class="display-4">
-                <i class="fas fa-futbol feature-icon"></i> Football Matches Hub
+                <i class="fas fa-futbol feature-icon"></i> Football AL24
             </h1>
-            <p class="lead">Your ultimate destination for live scores, match highlights, and breaking football news</p>
+            <p class="lead">Destinacioni juaj për rezultate live, pamje të ndeshjeve dhe lajmet më të fundit të futbollit</p>
             <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
-            <p>Stay updated with real-time football action from around the world</p>
+            <p>Informohuni në kohë reale për ndeshjet dhe lajmet më të fundit</p>
             
             <div class="btn-group-custom">
                 <a class="btn btn-primary" href="{% url 'today_matches' %}" role="button">
-                    <i class="fas fa-calendar-day"></i> Today's Matches
+                    <i class="fas fa-calendar-day"></i> Ndeshjet e Sotme
                 </a>
                 <a class="btn btn-primary pulse" href="{% url 'all_sport_api' %}" role="button">
-                    <i class="fas fa-bolt"></i> Live Events
+                    <i class="fas fa-bolt"></i> Ngjarjet Live
                     <span class="live-badge">LIVE</span>
                 </a>
                 <a class="btn btn-primary pulse" href="{% url 'stream' %}" role="button">
-                    <i class="fas fa-bolt"></i> Live Events Top Matches
+                    <i class="fas fa-bolt"></i>  Ndeshjet Kryesore Live
                     <span class="live-badge">LIVE</span>
                 </a>
                 <a class="btn btn-primary btn-highlight" href="{% url 'live_matches' %}" role="button">
-                    <i class="fas fa-play-circle"></i> Match from all Leagues
+                    <i class="fas fa-play-circle"></i> Ndeshjet nga të gjitha Ligat
                 </a>
                 <a class="btn btn-primary btn-highlight" href="{% url 'highlights' %}" role="button">
-                    <i class="fas fa-play-circle"></i> Match Highlights
+                    <i class="fas fa-play-circle"></i> Përmbledhjet të Ndeshjeve
                 </a>
                 <a class="btn btn-primary" href="{% url 'football_news' %}" role="button">
-                    <i class="fas fa-newspaper"></i> Latest News
+                    <i class="fas fa-newspaper"></i> Lajmet më të Fundit
                 </a>
             </div>
         </div>
         
-        <div class="row mt-5">
-            <div class="col-md-4 mb-4">
-                <div class="card bg-dark text-white border-0 shadow-lg h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-trophy text-warning mr-2"></i> Top Leagues</h5>
-                        <p class="card-text">Follow Premier League, La Liga, Bundesliga, Serie A, and more with live updates.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card bg-dark text-white border-0 shadow-lg h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-video text-danger mr-2"></i> Video Highlights</h5>
-                        <p class="card-text">Watch key moments from all major matches with our curated highlight reels.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card bg-dark text-white border-0 shadow-lg h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-bell text-info mr-2"></i> Instant Alerts</h5>
-                        <p class="card-text">Get real-time notifications for goals, red cards, and match results.</p>
-                    </div>
-                </div>
+        
+
+       <div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card bg-dark text-white border-0 shadow-lg h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-trophy text-warning mr-2"></i> Ligat Kryesore</h5>
+                <p class="card-text">Ndiq Premier League, La Liga, Bundesliga, Serie A dhe shumë të tjera me përditësime live.</p>
             </div>
         </div>
     </div>
-    
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2023 Football Matches Hub. All rights reserved.</p>
-            <p class="text-muted">
-                <i class="fas fa-shield-alt"></i> Data provided by Football API | 
-                <i class="fas fa-rss"></i> News from trusted sources
-            </p>
+    <div class="col-md-4 mb-4">
+        <div class="card bg-dark text-white border-0 shadow-lg h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-video text-danger mr-2"></i> Pamje të Ndeshjeve</h5>
+                <p class="card-text">Shiko momentet më të rëndësishme nga të gjitha ndeshjet kryesore me videot tona të përzgjedhura.</p>
+            </div>
         </div>
-    </footer>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card bg-dark text-white border-0 shadow-lg h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-bell text-info mr-2"></i> Njoftime të Menjëhershme</h5>
+                <p class="card-text">Merr njoftime në kohë reale për gola, kartona të kuq dhe rezultatet e ndeshjeve.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2023 Football AL24. Të gjitha të drejtat e rezervuara.</p>
+        <p class="text-muted">
+            <i class="fas fa-shield-alt"></i> Të dhënat sigurohen nga Football API | 
+            <i class="fas fa-rss"></i> Lajmet nga burime të besueshme
+        </p>
+    </div>
+</footer>
 
     <!-- Include Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

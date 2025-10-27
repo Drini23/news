@@ -269,7 +269,7 @@
         <div class="container">
             <div class="logo-container">
                 <img src="{% static 'images/foto.jpg' %}" alt="Football News Logo" class="logo">
-                <h1>Football News Hub</h1>
+                <h1>Football AL24</h1>
             </div>
         </div>
     </header>
@@ -277,15 +277,15 @@
     <main class="container">
         <div class="search-container">
             <form method="GET" action="{% url 'football_news' %}" class="search-form">
-                <input type="text" name="query" class="search-input" placeholder="Search for news..." value="{{ request.GET.query|default:'' }}">
+                <input type="text" name="query" class="search-input" placeholder="Kërko artikullin..." value="{{ request.GET.query|default:'' }}">
                 <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i> Search
+                    <i class="fas fa-search"></i> Kërko
                 </button>
             </form>
         </div>
 
         <a href="{% url 'home' %}" class="home-btn">
-            <i class="fas fa-arrow-left"></i> Back to Home
+            <i class="fas fa-arrow-left"></i> Kthehu në faqen kryesore
         </a>
 
         <ul class="news-list">
@@ -300,7 +300,7 @@
                             <p class="news-desc">{{ article.description }}</p>
                             <p class="news-desc">{{ article.publishedAt }}</p>
                             <a href="{{ article.url }}" class="read-more" target="_blank">
-                                Read full story <i class="fas fa-arrow-right"></i>
+                                lexoni artikullin e plot <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </li>
@@ -318,10 +318,13 @@
     </main>
 
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 Football News Hub. All rights reserved.</p>
-            <p class="mb-0">Powered by the latest football updates from around the world</p>
-        </div>
+       <div class="container">
+        <p>&copy; 2023 Football AL24. Të gjitha të drejtat e rezervuara.</p>
+        <p class="text-muted">
+            <i class="fas fa-shield-alt"></i> Të dhënat sigurohen nga Football API | 
+            <i class="fas fa-rss"></i> Lajmet nga burime të besueshme
+        </p>
+    </div>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

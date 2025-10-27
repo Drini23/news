@@ -1,10 +1,10 @@
 import logging
 import requests
-import pytz
+from . models import Match, Team
+
+
 from urllib.parse import quote
-
 from datetime import date, datetime
-
 from football.settings import  NEWS_API, RAPID_API, FOOTBALL_API
 
 
@@ -13,20 +13,22 @@ from django_ratelimit.decorators import ratelimit
 from django.core.cache import cache
 
 
-import json
 from django.http import JsonResponse
 from django.utils.timezone import now
 
 
 def home(request):
-    return render(request, 'blog/home.html')
+    
+    matches = Match.objects.all()
+    context = {
+        'matches': matches
+    }   
+    
+    return render(request, 'blog/home.html', context)
 
 
 
 def today_matches(request):
-    
-    
-    
     return render(request, 'blog/today_matches.html')
 
 

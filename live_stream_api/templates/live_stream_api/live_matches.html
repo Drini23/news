@@ -260,14 +260,14 @@
 </head>
 <body>
 <div class="container">
-    <h1>⚽ Live Football Matches</h1>
-    <h1><a href="{%url 'home'%}" class="home-link">🏠 Home</a></h1 style=color; red>
+    <h1>⚽ Ndeshje Live</h1>
+    <h1><a href="{%url 'home'%}" class="home-link">🏠 Kthehu në faqen kryesore</a></h1 style=color; red>
 
     <!-- Video Player Section -->
     <div id="videoPlayer" class="video-player-section">
         <div class="player-header">
             <div class="player-title" id="playerTitle"></div>
-            <button class="close-player" onclick="closePlayer()">Close Player</button>
+            <button class="close-player" onclick="closePlayer()">Mbylle Videon</button>
         </div>
         <div class="video-container" id="videoContainer">
             <div class="loading-message" id="loadingMessage">Loading stream...</div>
@@ -275,8 +275,8 @@
             <iframe id="streamFrame" style="display: none;" allowfullscreen allow="autoplay"></iframe>
         </div>
         <div class="try-direct-link" id="directLinkSection" style="display: none;">
-            <p style="margin-bottom: 10px; color: #666;">Can't play embedded? Try opening directly:</p>
-            <a id="directLink" href="#" target="_blank" class="direct-link-btn">Open in New Tab</a>
+            <p style="margin-bottom: 10px; color: #666;">Nuk mund të luash të integruar? Provoni ta hapni direkt:</p>
+            <a id="directLink" href="#" target="_blank" class="direct-link-btn">Hapeni në faqe të re</a>
         </div>
     </div>
 
@@ -300,19 +300,19 @@
 
 
             <div class="streams-section">
-                <div class="streams-title">Available Streams:</div>
+                <div class="streams-title">Streams të vlershëm:</div>
                 {% if match.stream_servers %}
                 <div class="stream-buttons">
                     {% for server in match.stream_servers %}
                     <button class="play-button"
                             onclick="playStream('{{ server.url }}', '{{ match.home_team }} vs {{ match.away_team }}', '{{ server.name }}')">
                         <div class="play-icon"></div>
-                        Watch on {{ server.name }}
+                        Shkoni në {{ server.name }}
                     </button>
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="no-streams">No streams available</div>
+                <div class="no-streams">Nuk ka servera për momentin </div>
                 {% endif %}
             </div>
         </div>

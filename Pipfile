@@ -25,6 +25,7 @@ google-api-python-client = "*"
 pytube = "*"
 beautifulsoup4 = "*"
 python-dotenv = "*"
+pillow = "*"
 
 [dev-packages]
 
