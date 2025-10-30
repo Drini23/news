@@ -20,8 +20,10 @@ from django.utils.timezone import now
 def home(request):
     
     matches = Match.objects.all()
+    teams = Team.objects.all()
     context = {
-        'matches': matches
+        'matches': matches,
+        'teams': teams,
     }   
     
     return render(request, 'blog/home.html', context)
