@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'news',
     'rapid',
     'live_stream_api',
+    'register',
 ]
 
 MIDDLEWARE = [

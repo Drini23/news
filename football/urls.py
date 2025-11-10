@@ -25,7 +25,8 @@ urlpatterns = [
     path('', include('blog.urls')),
     path('news/', include('news.urls')),
     path('rapid/', include('rapid.urls')),
-    path('live_stream_api/', include('live_stream_api.urls'))
+    path('live_stream_api/', include('live_stream_api.urls')),
+    path('register/', include('register.urls')),
 ]
 
 if settings.DEBUG:
