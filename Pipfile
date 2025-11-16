@@ -26,6 +26,7 @@ pytube = "*"
 beautifulsoup4 = "*"
 python-dotenv = "*"
 pillow = "*"
+stripe = "*"
 
 [dev-packages]
 

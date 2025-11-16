@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'rapid',
     'live_stream_api',
     'register',
+    'index',
 ]
 
 MIDDLEWARE = [
@@ -196,3 +197,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+STRIPE_SECRET_KEY = "sk_test_51RTnI8Q7xrYURdvSERhaG8znhiQqQASQKivQwirkCWudmxtuk7KmkJRrhFl12Agb7HWH13JTiOZf8kruzfjrSaCZ00B3FOb4TW"
+STRIPE_PUBLISHABLE_KEY = "pk_test_51RTnI8Q7xrYURdvSVlDNJIWvD8QKs4FM8BLQZgZ9ijwQNLzUMlNOQP23Nb6eKNEUqnIACqFvdQy61btiJklkzXO800gKoOZEZs"
+STRIPE_WEBHOOK_SECRET = "whsec_123"
+
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
