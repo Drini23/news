@@ -27,6 +27,7 @@ beautifulsoup4 = "*"
 python-dotenv = "*"
 pillow = "*"
 stripe = "*"
+mysqlclient = "*"
 
 [dev-packages]
 
