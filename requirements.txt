@@ -70,3 +70,6 @@ urllib3==2.2.2
 virtualenv==20.29.3
 whitenoise==6.9.0
 zope.interface==7.2
+dj-database-url
+mysqlclient
+
