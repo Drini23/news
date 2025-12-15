@@ -139,20 +139,15 @@ WSGI_APPLICATION = 'football.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 import os
+import dj_database_url
 
-if os.environ.get("RAILWAY_ENVIRONMENT"):
+if os.environ.get("DRINI_SQL"):
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("MYSQLDATABASE"),
-            "USER": os.environ.get("MYSQLUSER"),
-            "PASSWORD": os.environ.get("MYSQLPASSWORD"),
-            "HOST": os.environ.get("MYSQLHOST"),
-            "PORT": os.environ.get("MYSQLPORT"),
-            "OPTIONS": {
-                "charset": "utf8mb4",
-            },
-        }
+        "default": dj_database_url.parse(
+            os.environ.get("DRINI_SQL"),
+            conn_max_age=600,
+            engine="django.db.backends.mysql",
+        )
     }
 else:
     DATABASES = {
@@ -161,6 +156,7 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
 
 
 
