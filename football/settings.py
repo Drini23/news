@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=BASE_DIR / ".env")
@@ -137,7 +141,6 @@ WSGI_APPLICATION = 'football.wsgi.application'
 import os
 
 if os.environ.get("RAILWAY_ENVIRONMENT"):
-    # --- Production on Railway (MySQL) ---
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
@@ -152,13 +155,13 @@ if os.environ.get("RAILWAY_ENVIRONMENT"):
         }
     }
 else:
-    # --- Local development (SQLite) ---
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
 
 
 # Password validation

@@ -29,6 +29,7 @@ pillow = "*"
 stripe = "*"
 dj-database-url = "*"
 mysqlclient = "*"
+pymysql = "*"
 
 [dev-packages]
 
