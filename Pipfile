@@ -25,11 +25,11 @@ google-api-python-client = "*"
 pytube = "*"
 beautifulsoup4 = "*"
 python-dotenv = "*"
-pillow = "*"
 stripe = "*"
 dj-database-url = "*"
 mysqlclient = "*"
 pymysql = "*"
+pillow = "*"
 
 [dev-packages]
 
