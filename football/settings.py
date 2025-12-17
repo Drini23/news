@@ -141,10 +141,11 @@ WSGI_APPLICATION = 'football.wsgi.application'
 import os
 import dj_database_url
 
-if os.environ.get("DRINI_SQL"):
+db_url = os.environ.get("DRINI_SQL", "")
+if db_url:
     DATABASES = {
         "default": dj_database_url.parse(
-            os.environ.get("DRINI_SQL"),
+            db_url,
             conn_max_age=600,
             engine="django.db.backends.mysql",
         )
@@ -156,6 +157,7 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+
 
 
 
