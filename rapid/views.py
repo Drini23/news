@@ -57,8 +57,8 @@ from functools import lru_cache
 
 @lru_cache(maxsize=128)
 def all_sport_api(request):
-    url = "https://all-sport-live-stream.p.rapidapi.com/api/v2/br/all-live-stream"
-
+    # NEW endpoint (working)
+    url = "https://all-sport-live-stream.p.rapidapi.com/api/d/match_list"
     querystring = {"sportId": "1"}
 
     headers = {
@@ -72,29 +72,42 @@ def all_sport_api(request):
 
     if response.status_code == 200:
         data = response.json()
-        print(data)
 
-        # Data is a list of sport blocks
-        if isinstance(data, list):
-            for sport in data:
-                match_list = sport.get("data")
-                if isinstance(match_list, list):
-                    for match in match_list:
-                        matches.append({
-                            'team_one': match.get('team_one_name', 'Unknown'),
-                            'team_two': match.get('team_two_name', 'Unknown'),
-                            'score': match.get('score', 'vs'),
-                            'start_time': match.get('start_time', 'Unknown Time'),
-                            'iframe_source': match.get('iframe_source') if match.get('iframe_source') != "MATCH_WILL_BEGIN_SOON" else None,
-                            'm3u8_source': match.get('m3u8_source') if match.get('m3u8_source') != "MATCH_WILL_BEGIN_SOON" else None
-                        })
+        # NEW response structure
+        if "data" in data and "t1" in data["data"]:
+            for match in data["data"]["t1"]:
+
+                # only LIVE matches
+                if not match.get("iplay", False):
+                    continue
+
+                gmid = match.get("gmid")
+
+                matches.append({
+                    # keep old keys so template DOES NOT CHANGE
+                    "teams_name": match.get("ename", "Unknown"),
+                    "team_two": match.get("cname", "Unknown"),
+                    "score": match.get("sc", "vs"),
+                    "start_time": match.get("stime", "Live"),
+
+                    # iframe stream (constructed)
+                    "iframe_source": (
+                        f"https://livestream-v3-iframe.akamaized.uk/directStream"
+                        f"?gmid={gmid}&key=nokey"
+                        if gmid else None
+                    ),
+
+                    # this API does NOT provide m3u8
+                    "m3u8_source": None,
+                })
         else:
-            print("Unexpected data format: not a list")
+            print("Unexpected data format")
+
     else:
         print(f"Failed to fetch data: {response.status_code}")
 
-    context = {'matches': matches}
-    return render(request, 'rapid/all_sport_api.html', context)
+    context = {"matches": matches}
+    return render(request, "rapid/all_sport_api.html", context)
 
 def highlights(request):
     return render(request, 'rapid/highlights.html')

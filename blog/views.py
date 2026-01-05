@@ -35,8 +35,6 @@ def today_matches(request):
 
 
 
-
-
 def fetch_team_details(team_id, headers):
     api_url = f'http://api.football-data.org/v4/teams/{team_id}'
     response = requests.get(api_url, headers=headers)

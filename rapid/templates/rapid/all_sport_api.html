@@ -1,276 +1,403 @@
-{% block content %}
-<div class="live-matches-container">
-    <header class="matches-header">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        {% include 'blog/navbar.html' %}
-        <div class="header-top">
-            <a href="/" class="home-button">
-                <i class="fas fa-home"></i> Kthehu në faqen kryesore
-            </a>
-            <h1 class="main-title">⚽  Ndeshje Live</h1>
-        </div>
-        <p class="subtitle">Shiko transmetimet live të futbollit nga e gjithë bota</p>
-    </header>
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ FUTBOLL LIVE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset dhe base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    {% if matches %}
-    <div class="matches-grid">
-        {% for match in matches %}
-        <div class="match-card">
-            <div class="match-teams">
-                <span class="team team-home">{{ match.team_one }}</span>
-                <div class="match-score">
-                    <span class="score">{{ match.score|default:"vs" }}</span>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        /* Padding për navbar fixed */
+        .page-content {
+            padding-top: 80px;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Header */
+        .hero-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse-bg 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-bg {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-10px, -10px) scale(1.05); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 0, 0, 0.9);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .main-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            animation: slideDown 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Matches Container */
+        .matches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .match-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .teams-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .watch-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .watch-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.6);
+        }
+
+        .watch-btn i {
+            font-size: 1.2rem;
+        }
+
+        .watch-btn.disabled {
+            background: linear-gradient(135deg, #636363 0%, #a2ab58 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .watch-btn.disabled:hover {
+            transform: none;
+        }
+
+        /* No Matches Section */
+        .no-matches {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .no-matches-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.6;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .no-matches h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .no-matches p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-home-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Footer */
+        .live-footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        .live-footer p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .main-subtitle {
+                font-size: 1rem;
+            }
+
+            .matches-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-header {
+                padding: 30px 20px;
+            }
+            
+            .page-content {
+                padding-top: 70px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 0 15px;
+            }
+            
+            .hero-header {
+                padding: 25px 15px;
+                margin-top: 10px;
+            }
+            
+            .match-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Navbar -->
+    {% include 'blog/navbar.html' %}
+    
+    <!-- Page Content (me padding për navbar fixed) -->
+    <div class="page-content">
+        <div class="main-container">
+            <!-- Hero Header -->
+            <header class="hero-header">
+                <div class="header-content">
+                    <div class="live-badge">
+                        <span class="pulse"></span>
+                        LIVE NOW
+                    </div>
+                    <h1 class="main-title">⚽ FUTBOLL LIVE</h1>
+                    <p class="main-subtitle">Ndeshje në transmetim të drejtpërdrejtë</p>
                 </div>
-                <span class="team team-away">{{ match.team_two }}</span>
+            </header>
+            
+            <!-- Matches List -->
+            <div class="matches-container">
+                {% if matches %}
+                    {% for match in matches %}
+                    <div class="match-card">
+                        <div class="teams-name">
+                            {{ match.teams_name }}
+                        </div>
+                        
+                        {% if match.iframe_source %}
+                        <a href="{{ match.iframe_source }}" target="_blank" class="watch-btn">
+                            <i class="fas fa-play-circle"></i>
+                            <span>SHIKO LIVE</span>
+                        </a>
+                        {% else %}
+                        <button class="watch-btn disabled">
+                            <i class="fas fa-clock"></i>
+                            <span>NË DISPOZICION SË SHPEJTI</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <!-- No Matches Available -->
+                <div class="no-matches">
+                    <div class="no-matches-icon">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <h3>Nuk ka ndeshje live</h3>
+                    <p>Kontrolloni më vonë për ndeshje të reja</p>
+                    <a href="/" class="back-home-btn">
+                        <i class="fas fa-home"></i>
+                        Kthehu në Faqen Kryesore
+                    </a>
+                </div>
+                {% endif %}
             </div>
             
-            <div class="match-meta">
-                <div class="match-time">
-                    <i class="fas fa-clock"></i>
-                    {{ match.start_time }} • {{ match.start_time|date:"M d, Y" }}
-                </div>
-                
-                <div class="stream-buttons">
-                    {% if match.iframe_source %}
-                    <a href="{{ match.iframe_source }}" target="_blank" class="stream-btn iframe-btn">
-                        <i class="fas fa-tv"></i> Web Stream
-                    </a>
-                    {% endif %}
-                </div>
+            <!-- Footer -->
+            <div class="live-footer">
+                <p>Ndeshjet përditësohen automatikisht çdo 2 minuta</p>
             </div>
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="no-matches">
-        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No matches" class="no-matches-icon">
-        <h3>No live matches currently available</h3>
-        <p>Check back later for upcoming matches</p>
-    </div>
-    {% endif %}
-</div>
 
-<style>
-    :root {
-        --primary: #4361ee;
-        --secondary: #3f37c9;
-        --accent: #4895ef;
-        --dark: #2b2d42;
-        --light: #f8f9fa;
-        --success: #4cc9f0;
-        --danger: #f72585;
-        --warning: #f8961e;
-        --info: #43aa8b;
-    }
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    .live-matches-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        position: relative;
-    }
-    
-    .matches-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        position: relative;
-    }
-    
-    .header-top {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-    }
-    
-    .home-button {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        background: var(--primary);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    .home-button:hover {
-        background: var(--secondary);
-        transform: translateY(-50%) scale(1.05);
-    }
-    
-    .main-title {
-        font-size: 2.5rem;
-        color: var(--dark);
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-    }
-    
-    .subtitle {
-        color: #6c757d;
-        font-size: 1.1rem;
-    }
-    
-    .matches-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 1.5rem;
-    }
-    
-    .match-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-        padding: 1.5rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .match-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.12);
-    }
-    
-    .match-teams {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-    
-    .team {
-        flex: 1;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    .team-home {
-        color: var(--primary);
-        text-align: right;
-        padding-right: 1rem;
-    }
-    
-    .team-away {
-        color: var(--secondary);
-        text-align: left;
-        padding-left: 1rem;
-    }
-    
-    .match-score {
-        background: var(--light);
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 700;
-        color: var(--dark);
-        min-width: 70px;
-    }
-    
-    .match-meta {
-        border-top: 1px solid rgba(0,0,0,0.05);
-        padding-top: 1rem;
-    }
-    
-    .match-time {
-        color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .stream-buttons {
-        display: flex;
-        gap: 0.8rem;
-    }
-    
-    .stream-btn {
-        flex: 1;
-        padding: 0.6rem;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-    }
-    
-    .iframe-btn {
-        background: var(--primary);
-        color: white;
-    }
-    
-    .iframe-btn:hover {
-        background: var(--secondary);
-    }
-    
-    .m3u8-btn {
-        background: var(--success);
-        color: white;
-    }
-    
-    .m3u8-btn:hover {
-        background: #3aa8d4;
-    }
-    
-    .no-matches {
-        text-align: center;
-        padding: 3rem 0;
-    }
-    
-    .no-matches-icon {
-        width: 100px;
-        opacity: 0.7;
-        margin-bottom: 1.5rem;
-    }
-    
-    .no-matches h3 {
-        color: var(--dark);
-        margin-bottom: 0.5rem;
-    }
-    
-    .no-matches p {
-        color: #6c757d;
-    }
-    
-    @media (max-width: 768px) {
-        .matches-grid {
-            grid-template-columns: 1fr;
-        }
+    <script>
+        // Auto-refresh page every 2 minutes
+        setTimeout(function() {
+            window.location.reload();
+        }, 120000);
         
-        .main-title {
-            font-size: 2rem;
-        }
+        // Add animation delay to match cards
+        document.querySelectorAll('.match-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
         
-        .home-button {
-            position: relative;
-            margin-bottom: 1rem;
-            left: auto;
-            top: auto;
-            transform: none;
-            display: inline-flex;
-        }
-        
-        .header-top {
-            flex-direction: column;
-        }
-    }
-</style>
-
-<!-- Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-{% endblock %}
+        // Add click effect to watch buttons
+        document.querySelectorAll('.watch-btn:not(.disabled)').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if(this.tagName === 'A') return;
+                
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

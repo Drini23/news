@@ -1,50 +1,136 @@
-<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-
-  <div class="container">
-
-    <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
-      Football AL24
+<nav id="mainNavbar" class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid px-3 px-lg-4">
+    
+    <!-- Brand Logo -->
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+      <div class="brand-logo me-2">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="15" cy="15" r="14" stroke="#2ecc71" stroke-width="2"/>
+          <path d="M15 8L20 18H10L15 8Z" fill="#2ecc71"/>
+          <circle cx="15" cy="15" r="4" fill="#f1c40f"/>
+        </svg>
+      </div>
+      <div class="d-flex flex-column">
+        <span class="brand-title">⚽ Futboll AL24</span>
+        <small class="brand-subtitle">Live & Lajme</small>
+      </div>
     </a>
 
-    <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
-      {% if user.is_authenticated %}
-        <span class="text-warning">Përshëndetje, {{ user.username|capfirst }}!</span>
-      {% endif %}
-    </a>
+    <!-- User Greeting (Desktop) -->
+    {% if user.is_authenticated %}
+    <div class="d-none d-lg-flex align-items-center me-4">
+      <div class="user-greeting px-3 py-1 rounded-pill">
+        <i class="fas fa-user-circle me-2 text-warning"></i>
+        <span class="text-light fw-medium">{{ user.username|capfirst }}</span>
+      </div>
+    </div>
+    {% endif %}
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-      <span class="navbar-toggler-icon"></span>
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </button>
 
+    <!-- Navbar Menu -->
     <div class="collapse navbar-collapse" id="mainNavbar">
-      <ul class="navbar-nav ms-auto">
+      
+      <!-- User Greeting (Mobile) -->
+      {% if user.is_authenticated %}
+      <div class="d-lg-none mb-3 px-3 py-2 rounded">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-user-circle fs-4 me-3 text-warning"></i>
+          <div>
+            <div class="text-light fw-medium">Përshëndetje, {{ user.username|capfirst }}!</div>
+            <small class="text-light opacity-75">Mirë se vini</small>
+          </div>
+        </div>
+      </div>
+      {% endif %}
 
-        <li class="nav-item"><a class="nav-link" href="/">Faqja kryesore</a></li>
+      <ul class="navbar-nav ms-auto align-items-center">
+        
+        <!-- Home -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="/">
+            <i class="fas fa-home me-2 nav-icon"></i>
+            <span>Faqja Kryesore</span>
+          </a>
+        </li>
 
-        <li class="nav-item"><a class="nav-link" href="{% url 'live_matches'%}">Ndeshjet Live</a></li>
+        <!-- Live Matches -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'live_matches' %}">
+            <div class="nav-icon-wrapper me-2">
+              <i class="fas fa-tv"></i>
+              <span class="live-dot"></span>
+            </div>
+            <span>Ndeshjet Live</span>
+          </a>
+        </li>
 
+        <!-- Leagues Dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Kampionatet</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Premier League</a></li>
-            <li><a class="dropdown-item" href="#">La Liga</a></li>
-            <li><a class="dropdown-item" href="#">Serie A</a></li>
-            <li><a class="dropdown-item" href="#">Champions League</a></li>
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-trophy me-2 nav-icon"></i>
+            <span>Kampionatet</span>
+          </a>
+          <ul class="dropdown-menu border-0 shadow-lg">
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-futbol text-primary me-2"></i>
+              Premier League
+            </a></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-futbol text-danger me-2"></i>
+              La Liga
+            </a></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-futbol text-success me-2"></i>
+              Serie A
+            </a></li>
+            <li><hr class="dropdown-divider opacity-25"></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-star text-warning me-2"></i>
+              Champions League
+            </a></li>
           </ul>
         </li>
 
-        <li class="nav-item"><a class="nav-link" href="{% url 'football_news'%}">Lajme</a></li>
+        <!-- News -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'football_news' %}">
+            <i class="fas fa-newspaper me-2 nav-icon"></i>
+            <span>Lajme</span>
+          </a>
+        </li>
 
+        <!-- Auth Links -->
         {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link text-warning" href="{% url 'logout' %}">
-              Dil
-            </a>
-
-          </li>
+        <!-- Logout -->
+        <li class="nav-item">
+          <a class="nav-link btn-logout d-flex align-items-center" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span>Dil</span>
+          </a>
+        </li>
         {% else %}
-          <li class="nav-item"><a class="nav-link" href="{%url 'login'%}">Hyrje</a></li>
-          <li class="nav-item"><a class="nav-link" href="{%url 'register'%}">Regjistrohu</a></li>
+        <!-- Login -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'login' %}">
+            <i class="fas fa-sign-in-alt me-2 nav-icon"></i>
+            <span>Hyrje</span>
+          </a>
+        </li>
+        <!-- Register -->
+        <li class="nav-item">
+          <a class="nav-link btn-register d-flex align-items-center" href="{% url 'register' %}">
+            <i class="fas fa-user-plus me-2"></i>
+            <span>Regjistrohu</span>
+          </a>
+        </li>
         {% endif %}
 
       </ul>
@@ -52,3 +138,235 @@
 
   </div>
 </nav>
+
+<style>
+  /* Navbar Base Styles */
+  #mainNavbar {
+    background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem 0;
+    border-bottom: 2px solid #667eea;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  /* Brand Logo */
+  .brand-logo {
+    transition: transform 0.3s ease;
+  }
+  
+  .navbar-brand:hover .brand-logo {
+    transform: rotate(15deg);
+  }
+
+  .brand-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .brand-subtitle {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+  }
+
+  /* User Greeting */
+  .user-greeting {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .user-greeting:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #667eea;
+  }
+
+  /* Hamburger Menu */
+  .hamburger-menu {
+    width: 24px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .hamburger-menu span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: #2ecc71;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+
+  .navbar-toggler[aria-expanded="true"] .hamburger-menu span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+  }
+
+  .navbar-toggler[aria-expanded="true"] .hamburger-menu span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .navbar-toggler[aria-expanded="true"] .hamburger-menu span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+  }
+
+  /* Navigation Links */
+  .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500;
+    padding: 0.7rem 1rem !important;
+    margin: 0 0.2rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link:hover {
+    color: white !important;
+    background: rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .nav-link.active {
+    color: white !important;
+    background: rgba(102, 126, 234, 0.2);
+  }
+
+  .nav-link .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #2ecc71;
+  }
+
+  /* Live Matches Indicator */
+  .nav-icon-wrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+  }
+
+  .live-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #ff4757;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* Dropdown Menu */
+  .dropdown-menu {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    min-width: 220px;
+  }
+
+  .dropdown-item {
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    margin: 0.2rem 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(102, 126, 234, 0.2);
+    color: white;
+    transform: translateX(5px);
+  }
+
+  /* Special Buttons */
+  .btn-logout {
+    color: #ff6b6b !important;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+
+  .btn-logout:hover {
+    background: rgba(255, 107, 107, 0.2) !important;
+    border-color: #ff6b6b;
+  }
+
+  .btn-register {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: white !important;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem !important;
+    margin-left: 0.5rem;
+  }
+
+  .btn-register:hover {
+    background: linear-gradient(90deg, #764ba2, #667eea) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 992px) {
+    .navbar-collapse {
+      background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+      padding: 1rem;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-top: 0.5rem;
+    }
+    
+    .nav-link {
+      margin: 0.3rem 0;
+      padding: 0.8rem 1rem !important;
+    }
+    
+    .btn-register {
+      margin: 0.5rem 0 0 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .brand-title {
+      font-size: 1.1rem;
+    }
+    
+    .brand-subtitle {
+      font-size: 0.6rem;
+    }
+  }
+
+  /* Animation */
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
+
+<script>
+  // Add active class to current page
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+    
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        const navbarCollapse = document.getElementById('mainNavbar');
+        if (navbarCollapse.classList.contains('show')) {
+          const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+          bsCollapse.hide();
+        }
+      });
+    });
+  });
+</script>
