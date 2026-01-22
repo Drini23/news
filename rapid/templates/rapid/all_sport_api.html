@@ -2,402 +2,675 @@
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
+    <title>Futboll Live</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚽ FUTBOLL LIVE</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Reset dhe base styles */
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
+            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #fff;
             min-height: 100vh;
-            color: #ffffff;
         }
-
-        /* Padding për navbar fixed */
-        .page-content {
-            padding-top: 80px;
-        }
-
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Hero Header */
-        .hero-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .hero-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: pulse-bg 4s ease-in-out infinite;
-        }
-
-        @keyframes pulse-bg {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-10px, -10px) scale(1.05); }
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .live-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 0, 0, 0.9);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 12px;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-        }
-
-        .main-title {
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            animation: slideDown 0.6s ease-out;
-        }
-
-        .main-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            animation: slideDown 0.6s ease-out 0.2s both;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Matches Container */
-        .matches-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .match-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 25px;
+        
+        /* ===== NAVBAR STYLES ===== */
+        #mainNavbar {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+            backdrop-filter: blur(15px);
+            padding: 0.8rem 0;
+            border-bottom: 2px solid rgba(34, 197, 94, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
-            animation: fadeInUp 0.5s ease-out;
         }
 
-        .match-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.4);
+        /* Brand Logo */
+        .brand-logo {
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-brand:hover .brand-logo {
+            transform: rotate(15deg);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .teams-name {
+        .brand-title {
             font-size: 1.3rem;
             font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #ffffff;
-            line-height: 1.4;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .watch-btn {
+        .brand-subtitle {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+        }
+
+        /* User Greeting */
+        .user-greeting {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .user-greeting:hover {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: #22c55e;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            width: 24px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: #22c55e;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-toggler[aria-expanded="true"] .hamburger-menu span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .navbar-toggler[aria-expanded="true"] .hamburger-menu span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .navbar-toggler[aria-expanded="true"] .hamburger-menu span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Navigation Links */
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.7rem 1rem !important;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(34, 197, 94, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: white !important;
+            background: rgba(34, 197, 94, 0.2);
+            border-bottom: 2px solid #22c55e;
+        }
+
+        .nav-link .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #22c55e;
+        }
+
+        /* Live Matches Indicator */
+        .nav-icon-wrapper {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            color: #22c55e;
+        }
+
+        .live-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            min-width: 220px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .dropdown-item {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(34, 197, 94, 0.2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Special Buttons */
+        .btn-logout {
+            color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: #ef4444;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white !important;
+            border-radius: 10px;
+            padding: 0.5rem 1.2rem !important;
+            margin-left: 0.5rem;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-register:hover {
+            background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            .navbar-collapse {
+                background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+                padding: 1rem;
+                border-radius: 0 0 15px 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+                margin-top: 0.5rem;
+                border: 1px solid rgba(34, 197, 94, 0.2);
+            }
+            
+            .nav-link {
+                margin: 0.3rem 0;
+                padding: 0.8rem 1rem !important;
+            }
+            
+            .btn-register {
+                margin: 0.5rem 0 0 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .brand-title {
+                font-size: 1.1rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 0.6rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* ===== PAGE CONTENT STYLES ===== */
+        .page-content {
+            padding: 110px 15px 30px;
+            max-width: 1100px;
+            margin: auto;
+        }
+        
+        .page-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+        
+        /* MATCH CARD */
+        .match-card {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(34, 197, 94, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .match-card:hover::before {
+            opacity: 1;
+        }
+        
+        .teams-name {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-            width: 100%;
-            padding: 15px 25px;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .teams-name::before {
+            content: '⚽';
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(34, 197, 94, 0.4));
+        }
+        
+        .watch-btn {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
             border: none;
-            border-radius: 10px;
+            padding: 12px 24px;
+            border-radius: 30px;
             color: white;
-            font-weight: 700;
-            font-size: 1rem;
             cursor: pointer;
-            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
+        
         .watch-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.6);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
         }
-
+        
+        .watch-btn:active {
+            transform: translateY(0);
+        }
+        
         .watch-btn i {
-            font-size: 1.2rem;
+            font-size: 16px;
         }
-
+        
         .watch-btn.disabled {
-            background: linear-gradient(135deg, #636363 0%, #a2ab58 100%);
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
             cursor: not-allowed;
             box-shadow: none;
         }
-
+        
         .watch-btn.disabled:hover {
             transform: none;
-        }
-
-        /* No Matches Section */
-        .no-matches {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-        }
-
-        .no-matches-icon {
-            font-size: 5rem;
-            margin-bottom: 20px;
-            opacity: 0.6;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .no-matches h3 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
-
-        .no-matches p {
-            font-size: 1.1rem;
-            opacity: 0.8;
-            margin-bottom: 30px;
-        }
-
-        .back-home-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .back-home-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        /* Footer */
-        .live-footer {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
-            margin-top: 40px;
-        }
-
-        .live-footer p {
-            font-size: 0.95rem;
-            opacity: 0.8;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-title {
-                font-size: 2rem;
-            }
-
-            .main-subtitle {
-                font-size: 1rem;
-            }
-
-            .matches-container {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-header {
-                padding: 30px 20px;
-            }
-            
-            .page-content {
-                padding-top: 70px;
-            }
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
         }
         
-        @media (max-width: 480px) {
-            .main-container {
-                padding: 0 15px;
+        /* PLAYER */
+        .player-wrapper {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            margin: 40px auto;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8),
+                        0 0 0 1px rgba(34, 197, 94, 0.2);
+            position: relative;
+        }
+        
+        .player-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #22c55e, #16a34a, #22c55e);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(10px);
+        }
+        
+        .player-wrapper iframe,
+        .player-wrapper video {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Empty state */
+        .page-content > p {
+            text-align: center;
+            font-size: 18px;
+            color: #94a3b8;
+            padding: 60px 20px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 16px;
+            border: 2px dashed rgba(148, 163, 184, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 90px 12px 20px;
             }
             
-            .hero-header {
-                padding: 25px 15px;
-                margin-top: 10px;
+            .page-content h1 {
+                font-size: 2rem;
+                margin-bottom: 20px;
             }
             
             .match-card {
+                flex-direction: column;
+                gap: 16px;
                 padding: 20px;
+                text-align: center;
             }
+            
+            .teams-name {
+                font-size: 16px;
+                justify-content: center;
+            }
+            
+            .watch-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 24px;
+            }
+            
+            .player-wrapper {
+                border-radius: 12px;
+                margin: 30px auto;
+            }
+        }
+        
+        /* Loading animation */
+        @keyframes pulseLoading {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+        
+        .player-wrapper.loading {
+            animation: pulseLoading 1.5s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
-    <!-- Include Navbar -->
-    {% include 'blog/navbar.html' %}
+<!-- Navbar -->
+<nav id="mainNavbar" class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid px-3 px-lg-4">
     
-    <!-- Page Content (me padding për navbar fixed) -->
-    <div class="page-content">
-        <div class="main-container">
-            <!-- Hero Header -->
-            <header class="hero-header">
-                <div class="header-content">
-                    <div class="live-badge">
-                        <span class="pulse"></span>
-                        LIVE NOW
-                    </div>
-                    <h1 class="main-title">⚽ FUTBOLL LIVE</h1>
-                    <p class="main-subtitle">Ndeshje në transmetim të drejtpërdrejtë</p>
-                </div>
-            </header>
-            
-            <!-- Matches List -->
-            <div class="matches-container">
-                {% if matches %}
-                    {% for match in matches %}
-                    <div class="match-card">
-                        <div class="teams-name">
-                            {{ match.teams_name }}
-                        </div>
-                        
-                        {% if match.iframe_source %}
-                        <a href="{{ match.iframe_source }}" target="_blank" class="watch-btn">
-                            <i class="fas fa-play-circle"></i>
-                            <span>SHIKO LIVE</span>
-                        </a>
-                        {% else %}
-                        <button class="watch-btn disabled">
-                            <i class="fas fa-clock"></i>
-                            <span>NË DISPOZICION SË SHPEJTI</span>
-                        </button>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                {% else %}
-                <!-- No Matches Available -->
-                <div class="no-matches">
-                    <div class="no-matches-icon">
-                        <i class="fas fa-futbol"></i>
-                    </div>
-                    <h3>Nuk ka ndeshje live</h3>
-                    <p>Kontrolloni më vonë për ndeshje të reja</p>
-                    <a href="/" class="back-home-btn">
-                        <i class="fas fa-home"></i>
-                        Kthehu në Faqen Kryesore
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-            
-            <!-- Footer -->
-            <div class="live-footer">
-                <p>Ndeshjet përditësohen automatikisht çdo 2 minuta</p>
-            </div>
+    <!-- Brand Logo -->
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+      <div class="brand-logo me-2">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="15" cy="15" r="14" stroke="#22c55e" stroke-width="2"/>
+          <path d="M15 8L20 18H10L15 8Z" fill="#22c55e"/>
+          <circle cx="15" cy="15" r="4" fill="#f1c40f"/>
+        </svg>
+      </div>
+      <div class="d-flex flex-column">
+        <span class="brand-title">⚽ Futboll AL24</span>
+        <small class="brand-subtitle">Live & Lajme</small>
+      </div>
+    </a>
+
+    <!-- User Greeting (Desktop) -->
+    {% if user.is_authenticated %}
+    <div class="d-none d-lg-flex align-items-center me-4">
+      <div class="user-greeting px-3 py-1 rounded-pill">
+        <i class="fas fa-user-circle me-2 text-warning"></i>
+        <span class="text-light fw-medium">{{ user.username|capfirst }}</span>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+
+    <!-- Navbar Menu -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      
+      <!-- User Greeting (Mobile) -->
+      {% if user.is_authenticated %}
+      <div class="d-lg-none mb-3 px-3 py-2 rounded">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-user-circle fs-4 me-3 text-warning"></i>
+          <div>
+            <div class="text-light fw-medium">Përshëndetje, {{ user.username|capfirst }}!</div>
+            <small class="text-light opacity-75">Mirë se vini</small>
+          </div>
         </div>
+      </div>
+      {% endif %}
+
+      <ul class="navbar-nav ms-auto align-items-center">
+        
+        <!-- Home -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="/">
+            <i class="fas fa-home me-2 nav-icon"></i>
+            <span>Faqja Kryesore</span>
+          </a>
+        </li>
+
+        <!-- Live Matches -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'live_matches' %}">
+            <div class="nav-icon-wrapper me-2">
+              <i class="fas fa-tv"></i>
+              <span class="live-dot"></span>
+            </div>
+            <span>Ndeshjet Live</span>
+          </a>
+        </li>
+
+        <!-- Leagues Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-trophy me-2 nav-icon"></i>
+            <span>Kampionatet</span>
+          </a>
+          <ul class="dropdown-menu border-0 shadow-lg">
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-futbol text-primary me-2"></i>
+              Premier League
+            </a></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-futbol text-danger me-2"></i>
+              La Liga
+            </a></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-futbol text-success me-2"></i>
+              Serie A
+            </a></li>
+            <li><hr class="dropdown-divider opacity-25"></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="#">
+              <i class="fas fa-star text-warning me-2"></i>
+              Champions League
+            </a></li>
+          </ul>
+        </li>
+
+        <!-- News -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'football_news' %}">
+            <i class="fas fa-newspaper me-2 nav-icon"></i>
+            <span>Lajme</span>
+          </a>
+        </li>
+
+        <!-- Auth Links -->
+        {% if user.is_authenticated %}
+        <!-- Logout -->
+        <li class="nav-item">
+          <a class="nav-link btn-logout d-flex align-items-center" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span>Dil</span>
+          </a>
+        </li>
+        {% else %}
+        <!-- Login -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="{% url 'login' %}">
+            <i class="fas fa-sign-in-alt me-2 nav-icon"></i>
+            <span>Hyrje</span>
+          </a>
+        </li>
+        <!-- Register -->
+        <li class="nav-item">
+          <a class="nav-link btn-register d-flex align-items-center" href="{% url 'register' %}">
+            <i class="fas fa-user-plus me-2"></i>
+            <span>Regjistrohu</span>
+          </a>
+        </li>
+        {% endif %}
+
+      </ul>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
+</nav>
+
+<div class="page-content">
+    <h1>⚽ Futboll Live</h1>
+    <!-- MATCHES -->
+    {% if matches %}
+        {% for match in matches %}
+        <div class="match-card">
+            <div class="teams-name">
+                {{ match.teams_name }}
+            </div>
+            {% if match.iframe_source %}
+            <button
+                class="watch-btn"
+                onclick="playStream('{{ match.iframe_source }}')">
+                <i class="fas fa-play-circle"></i>
+                <span>SHIKO LIVE</span>
+            </button>
+            {% else %}
+            <button class="watch-btn disabled">
+                <i class="fas fa-clock"></i>
+                <span>NË DISPOZICION SË SHPEJTI</span>
+            </button>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>Nuk ka ndeshje live për momentin.</p>
+    {% endif %}
+    <!-- PLAYER (ONE TIME ONLY) -->
+    <div class="player-wrapper" id="playerWrapper">
+        <!-- stream loads here -->
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Add active class to current page
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
     
-    <script>
-        // Auto-refresh page every 2 minutes
-        setTimeout(function() {
-            window.location.reload();
-        }, 120000);
-        
-        // Add animation delay to match cards
-        document.querySelectorAll('.match-card').forEach((card, index) => {
-            card.style.animationDelay = `${index * 0.1}s`;
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse.classList.contains('show')) {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                bsCollapse.hide();
+            }
         });
-        
-        // Add click effect to watch buttons
-        document.querySelectorAll('.watch-btn:not(.disabled)').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                if(this.tagName === 'A') return;
-                
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 200);
-            });
-        });
-    </script>
+    });
+});
+
+function playStream(streamLink) {
+    const wrapper = document.getElementById("playerWrapper");
+    wrapper.style.display = "block";
+    wrapper.classList.add("loading");
+    wrapper.innerHTML = "Loading stream...";
+    // Detect stream type
+    if (streamLink.endsWith(".m3u8") || streamLink.endsWith(".mp4")) {
+        wrapper.innerHTML = `
+            <video controls autoplay playsinline>
+                <source src="${streamLink}">
+            </video>
+        `;
+    } else {
+        wrapper.innerHTML = `
+            <iframe
+                src="${streamLink}"
+                allow="autoplay; encrypted-media"
+                allowfullscreen>
+            </iframe>
+        `;
+    }
+    wrapper.classList.remove("loading");
+    wrapper.scrollIntoView({ behavior: "smooth" });
+}
+</script>
 </body>
 </html>
