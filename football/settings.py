@@ -228,5 +228,5 @@ SESSION_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
     "https://*.railway.app",
     "https://news-py88.onrender.com",
-    "https://futbollal.com/",
+    "https://futbollal.com",
 ]
