@@ -59,3 +59,45 @@ def all_sport_api(request):
 
 def highlights(request):
     return render(request, 'rapid/highlights.html')
+
+
+import requests
+from django.shortcuts import render
+from django.http import JsonResponse
+
+API_KEY = "ff182b108amshf8e8d9cb53258dbp193014jsn90d493c12420"
+HEADERS = {
+    "x-rapidapi-key": API_KEY,
+    "x-rapidapi-host": "football-live-stream-api.p.rapidapi.com",
+}
+
+def new_api(request):
+    """Fetch all matches and render template"""
+    url = "https://football-live-stream-api.p.rapidapi.com/all-match"
+    response = requests.get(url, headers=HEADERS)
+    matches = []
+
+    if response.status_code == 200:
+        data = response.json()
+        for match in data.get("result", []):
+            matches.append({
+                "id": match.get("id"),
+                "home_name": match.get("home_name"),
+                "away_name": match.get("away_name"),
+                "score": match.get("score"),
+                "status": match.get("status"),
+            })
+    return render(request, "rapid/new_api.html", {"matches": matches})
+
+
+def get_stream(request, match_id):
+    """Fetch stream URL from API and return as JSON"""
+    url = f"https://football-live-stream-api.p.rapidapi.com/link/{match_id}"
+    try:
+        res = requests.get(url, headers=HEADERS)
+        res.raise_for_status()
+        data = res.json()
+        stream_url = data.get("url")
+        return JsonResponse({"stream": stream_url})
+    except Exception as e:
+        return JsonResponse({"stream": None, "error": str(e)})

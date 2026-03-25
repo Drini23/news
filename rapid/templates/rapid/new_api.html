@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+</head>
+<body>
+    <h1>Football Matches Today</h1>
+
+    {% for match in matches %}
+        <div class="match">
+            <strong>{{ match.home_name }} vs {{ match.away_name }}</strong> |
+            Score: {{ match.score }} |
+            Status: {{ match.status }}
+             <a href="{{ match.stream_url }}" target="_blank">Watch Stream</a>
+        </div>
+
+        
+    {% endfor %}
+
+   
