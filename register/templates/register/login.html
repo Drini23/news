@@ -39,20 +39,25 @@
         {% csrf_token %}
 
         <div class="mb-3">
-            <label class="form-label">Username</label>
+            <label class="form-label">Emri i Përdoruesit</label>
             <input type="text" class="form-control" name="username" required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Password</label>
+            <label class="form-label">Kodi i Llogarisë</label>
             <input type="password" class="form-control" name="password" required>
         </div>
 
-        <button class="btn btn-primary w-100">Login</button>
+        <button class="btn btn-primary w-100">Hyni</button>
 
         <p class="text-center mt-3">
-            Don't have an account?
-            <a href="{% url 'register' %}">Register</a>
+             krijo një llogari të re?
+            <a href="{% url 'register' %}">Regjistrohu</a>
+        </p>
+
+        <p class="text-center mt-3">
+             Faqja kryesore
+            <a href="{% url 'home' %}">Faqja kryesore</a>
         </p>
     </form>
 </div>

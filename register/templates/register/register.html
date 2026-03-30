@@ -33,17 +33,22 @@
 <body>
 
 <div class="card">
-    <p class="title">📝 Register</p>
+    <p class="title">📝 Regjistrohu</p>
 
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
 
-        <button class="btn btn-success w-100 mt-3">Create Account</button>
+        <button class="btn btn-success w-100 mt-3">Regjistrohu</button>
 
         <p class="text-center mt-3">
-            Already have an account?
-            <a href="{% url 'login' %}">Login</a>
+                Ke një llogari?
+                <a href="{% url 'login' %}">Hyni</a>
+        </p>
+
+        <p class="text-center mt-3">
+             Faqja kryesore
+            <a href="{% url 'home' %}">Faqja kryesore</a>
         </p>
     </form>
 </div>
