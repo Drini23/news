@@ -203,7 +203,7 @@ def match_details_1(request):
         0 if x['league'] in top_leagues else 1
     ))
 
-    return render(request, "football/match_details_1.html", {"matches": matches})
+    return render(request, "blog/match_details_1.html", {"matches": matches})
 
 
 

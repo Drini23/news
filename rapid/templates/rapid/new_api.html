@@ -1,20 +1,348 @@
 <!DOCTYPE html>
-<html>
+<html lang="sq">
 <head>
- 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ndeshjet e Sotme | Live Football</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:'Poppins', sans-serif;
+            background:#0f172a;
+            color:white;
+            min-height:100vh;
+            padding:30px 15px;
+        }
+
+        .container{
+            max-width:1100px;
+            margin:auto;
+        }
+
+        .header{
+            text-align:center;
+            margin-bottom:40px;
+        }
+
+        .header h1{
+            font-size:42px;
+            font-weight:700;
+            margin-bottom:10px;
+            background:linear-gradient(to right,#38bdf8,#22c55e);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+
+        .header p{
+            color:#94a3b8;
+            font-size:16px;
+        }
+
+        .matches-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            gap:25px;
+        }
+
+        .match-card{
+            background:#1e293b;
+            border-radius:20px;
+            padding:25px;
+            position:relative;
+            overflow:hidden;
+            transition:0.3s ease;
+            border:1px solid rgba(255,255,255,0.05);
+        }
+
+        .match-card:hover{
+            transform:translateY(-6px);
+            box-shadow:0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .live-badge{
+            position:absolute;
+            top:15px;
+            right:15px;
+            background:#ef4444;
+            color:white;
+            padding:6px 12px;
+            border-radius:30px;
+            font-size:12px;
+            font-weight:600;
+            animation:pulse 1.5s infinite;
+        }
+
+        @keyframes pulse{
+            0%{opacity:1;}
+            50%{opacity:0.6;}
+            100%{opacity:1;}
+        }
+
+        .teams{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-top:20px;
+            margin-bottom:20px;
+        }
+
+        .team{
+            text-align:center;
+            width:40%;
+        }
+
+        .team i{
+            font-size:40px;
+            color:#38bdf8;
+            margin-bottom:10px;
+        }
+
+        .team-name{
+            font-size:18px;
+            font-weight:600;
+        }
+
+        .vs{
+            font-size:22px;
+            font-weight:700;
+            color:#22c55e;
+        }
+
+        .match-info{
+            margin-top:15px;
+            padding-top:15px;
+            border-top:1px solid rgba(255,255,255,0.08);
+        }
+
+        .info-item{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:10px;
+            color:#cbd5e1;
+            font-size:15px;
+        }
+
+        .score{
+            font-size:20px;
+            font-weight:700;
+            color:#22c55e;
+        }
+
+        .watch-btn{
+            width:100%;
+            border:none;
+            cursor:pointer;
+            display:block;
+            text-align:center;
+            margin-top:20px;
+            background:linear-gradient(135deg,#22c55e,#16a34a);
+            color:white;
+            padding:14px;
+            border-radius:12px;
+            font-weight:600;
+            transition:0.3s;
+            font-size:15px;
+        }
+
+        .watch-btn:hover{
+            transform:scale(1.03);
+            opacity:0.9;
+        }
+
+        .watch-btn.loading{
+            opacity:0.7;
+            pointer-events:none;
+        }
+
+        .empty{
+            text-align:center;
+            padding:60px 20px;
+            background:#1e293b;
+            border-radius:20px;
+            color:#94a3b8;
+        }
+
+        @media(max-width:600px){
+
+            .header h1{
+                font-size:30px;
+            }
+
+            .team-name{
+                font-size:15px;
+            }
+
+            .vs{
+                font-size:18px;
+            }
+
+            .match-card{
+                padding:20px;
+            }
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Football Matches Today</h1>
 
-    {% for match in matches %}
-        <div class="match">
-            <strong>{{ match.home_name }} vs {{ match.away_name }}</strong> |
-            Score: {{ match.score }} |
-            Status: {{ match.status }}
-             <a href="{{ match.stream_url }}" target="_blank">Watch Stream</a>
+<div class="container">
+
+    <div class="header">
+        <h1>
+            <i class="fa-solid fa-futbol"></i>
+            Ndeshjet e Sotme
+        </h1>
+
+        <p>
+            Shiko ndeshjet live dhe rezultatet në kohë reale
+        </p>
+    </div>
+
+    {% if matches %}
+
+    <div class="matches-grid">
+
+        {% for match in matches %}
+
+        <div class="match-card">
+
+            {% if match.status == "LIVE" %}
+            <div class="live-badge">
+                <i class="fa-solid fa-circle"></i>
+                LIVE
+            </div>
+            {% endif %}
+
+            <div class="teams">
+
+                <div class="team">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="team-name">
+                        {{ match.home_name }}
+                    </div>
+                </div>
+
+                <div class="vs">VS</div>
+
+                <div class="team">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="team-name">
+                        {{ match.away_name }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="match-info">
+
+                <div class="info-item">
+                    <span>
+                        <i class="fa-solid fa-trophy"></i>
+                        Rezultati
+                    </span>
+
+                    <span class="score">
+                        {{ match.score }}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span>
+                        <i class="fa-solid fa-signal"></i>
+                        Statusi
+                    </span>
+
+                    <span>
+                        {{ match.status }}
+                    </span>
+                </div>
+
+            </div>
+
+            <button
+                class="watch-btn"
+                onclick="openStream('{{ match.id }}', this)"
+            >
+                <i class="fa-solid fa-play"></i>
+                Shiko Live
+            </button>
+
         </div>
 
-        
-    {% endfor %}
+        {% endfor %}
 
-   
+    </div>
+
+    {% else %}
+
+    <div class="empty">
+        <h2>Nuk ka ndeshje për momentin</h2>
+        <p>Kontrollo më vonë për ndeshje të reja live.</p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+async function openStream(matchId, button){
+
+    const originalText = button.innerHTML;
+
+    button.classList.add("loading");
+
+    button.innerHTML = `
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Duke hapur...
+    `;
+
+    try{
+
+        console.log("MATCH ID:", matchId);
+
+        const response = await fetch(`/rapid/stream/${matchId}/`);
+
+        console.log("RESPONSE:", response);
+
+        const text = await response.text();
+
+        console.log("RAW RESPONSE:", text);
+
+        button.classList.remove("loading");
+
+        button.innerHTML = originalText;
+
+        window.location.href = `/rapid/stream/${matchId}/`;
+
+    }catch(error){
+
+        console.log("ERROR:", error);
+
+        alert("Gabim ne hapjen e stream");
+
+        button.classList.remove("loading");
+
+        button.innerHTML = originalText;
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

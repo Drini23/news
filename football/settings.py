@@ -35,7 +35,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
 
 FOOTBALL_API = os.getenv("FOOTBALL_API")
 NEWS_API = os.getenv("NEWS_API")
-RAPID_API = os.getenv("RAPID_API")
+RAPID_API = os.getenv("RAPID_API_KEY")
 S_ALL_SPORT_API = os.getenv("ALL_SPORT_API")
 SECRET_KEY = os.getenv("SECRET_KEY")
 FOOTBALL_LIVE_STREAMING_API = os.getenv("FOOTBALL_LIVE_STREAMING_API")
