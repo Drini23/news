@@ -648,29 +648,39 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function playStream(streamLink) {
+    // Most external sites block iframe embedding
+    // Open in new tab instead
+    window.open(streamLink, '_blank');
+    
+    // Show info message
     const wrapper = document.getElementById("playerWrapper");
     wrapper.style.display = "block";
-    wrapper.classList.add("loading");
-    wrapper.innerHTML = "Loading stream...";
-    // Detect stream type
-    if (streamLink.endsWith(".m3u8") || streamLink.endsWith(".mp4")) {
-        wrapper.innerHTML = `
-            <video controls autoplay playsinline>
-                <source src="${streamLink}">
-            </video>
-        `;
-    } else {
-        wrapper.innerHTML = `
-            <iframe
-                src="${streamLink}"
-                allow="autoplay; encrypted-media"
-                allowfullscreen>
-            </iframe>
-        `;
-    }
-    wrapper.classList.remove("loading");
+    wrapper.innerHTML = `
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+                    padding: 30px; 
+                    border-radius: 16px; 
+                    text-align: center;
+                    border: 1px solid rgba(34, 197, 94, 0.3);">
+            <i class="fas fa-external-link-alt" style="font-size: 48px; color: #22c55e; margin-bottom: 15px;"></i>
+            <h3 style="margin-bottom: 10px;">Stream Po Hapet</h3>
+            <p style="margin-bottom: 15px; color: #cbd5e1;">Nëse nuk hapet automatikisht, klikoni butonin më poshtë:</p>
+            <a href="${streamLink}" 
+               target="_blank" 
+               style="display: inline-block;
+                      background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+                      color: white;
+                      padding: 12px 24px;
+                      border-radius: 30px;
+                      text-decoration: none;
+                      font-weight: 600;">
+                <i class="fas fa-play"></i> Hap Stream-in
+            </a>
+        </div>
+    `;
+    
     wrapper.scrollIntoView({ behavior: "smooth" });
 }
+
 </script>
 </body>
 </html>
