@@ -339,6 +339,7 @@
         const directLinkSection = document.getElementById('directLinkSection');
         const directLink = document.getElementById('directLink');
         const videoContainer = document.getElementById('videoContainer');
+        const proxiedUrl = `/stream-proxy/?url=${encodeURIComponent(url)}`;
 
         // Reset previous stream
         if (currentHls) {
