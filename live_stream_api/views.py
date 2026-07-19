@@ -4,13 +4,13 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from football.settings import FOOTBALL_LIVE_STREAMING_API
+from football.settings import FOOTBALL_LIVE_STREAMING_API, S_ALL_SPORT_API
 
 
 def live_matches(request):
     url = "https://football-live-streaming-api.p.rapidapi.com/matches"
     headers = {
-        "x-rapidapi-key": FOOTBALL_LIVE_STREAMING_API,
+        "x-rapidapi-key": S_ALL_SPORT_API,
         "x-rapidapi-host": "football-live-streaming-api.p.rapidapi.com"
     }
 
