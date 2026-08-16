@@ -160,12 +160,12 @@ def match_details_1(request):
 
         for match in current_page_matches:
             league_name = match.get("league_name", "")
-            status = match.get("status")  # live, upcoming, finished
-            match_time_raw = match.get("match_time")  # string or int
+            status = match.get("status")  
+            match_time_raw = match.get("match_time")  
 
             # Convert to local time safely
             match_time = "TBD"
-            local_tz = pytz.timezone("Europe/Warsaw")  # change to your timezone
+            local_tz = pytz.timezone("Europe/Warsaw")  
             try:
                 if isinstance(match_time_raw, str):
                     utc_dt = datetime.strptime(match_time_raw, "%Y-%m-%dT%H:%M:%SZ")

@@ -46,7 +46,7 @@ STRIPE_PUBLISHABLE_KEY_TEST = os.getenv("STRIPE_PUBLISHABLE_KEY_TEST")
 STRIPE_WEBHOOK_SECRET_TEST = os.getenv("STRIPE_WEBHOOK_SECRET_TEST")
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['futbollal.com', '127.0.0.1']
 
 
 # Application definition
