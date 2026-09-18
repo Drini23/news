@@ -3,59 +3,107 @@ from django.shortcuts import render
 from football.settings import S_ALL_SPORT_API
 from functools import lru_cache
 
-@lru_cache(maxsize=128)
-def all_sport_api(request):
-    # NEW endpoint (working)
-    url = "https://all-sport-live-stream.p.rapidapi.com/api/d/match_list"
-    querystring = {"sportId": "1"}
+import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from django.shortcuts import render
 
+
+BASE_URL = "https://all-sport-live-stream.p.rapidapi.com"
+
+
+def fetch_stream(gmid, headers):
+    """Fetch one stream URL. Returns (gmid, url_or_None)."""
+    try:
+        r = requests.get(
+            f"{BASE_URL}/api/d/stream_source",
+            headers=headers,
+            params={"gmid": str(gmid)},
+            timeout=15
+        )
+        if r.status_code != 200:
+            print(f"[stream] gmid={gmid} HTTP {r.status_code} -> {r.text[:120]}")
+            return gmid, None
+
+        data = r.json()
+
+        # Try every shape we've seen
+        url = None
+        if data.get("status") == "success" and "data" in data:
+            url = (data.get("data") or {}).get("source")
+        if not url:
+            url = data.get("stream_url")
+        if not url:
+            url = data.get("url")
+
+        print(f"[stream] gmid={gmid} -> {url}")
+        return gmid, url
+
+    except Exception as e:
+        print(f"[stream] gmid={gmid} ERROR: {e}")
+        return gmid, None
+
+
+def all_sport_api(request):
     headers = {
         "x-rapidapi-key": S_ALL_SPORT_API,
-        "x-rapidapi-host": "all-sport-live-stream.p.rapidapi.com"
+        "x-rapidapi-host": "all-sport-live-stream.p.rapidapi.com",
+        "Content-Type": "application/json"
     }
 
-    response = requests.get(url, headers=headers, params=querystring)
+    print("=" * 60)
+    print("[all_sport_api] REQUEST 1: fetching /esid ...")
 
+    # ---------- REQUEST 1: match list ----------
+    list_response = requests.get(
+        f"{BASE_URL}/esid",
+        headers=headers,
+        params={"sid": "1"},
+        timeout=15
+    )
+
+    print(f"[all_sport_api] /esid status: {list_response.status_code}")
+
+    if list_response.status_code != 200:
+        print(f"[all_sport_api] /esid failed: {list_response.text}")
+        return render(request, "rapid/all_sport_api.html", {"matches": []})
+
+    data = (list_response.json() or {}).get("data") or {}
+    match_items = data.get("t1") or []
+
+    # Filter live matches only
+    live_matches = [m for m in match_items if m.get("iplay") and m.get("gmid")]
+    print(f"[all_sport_api] {len(match_items)} matches, {len(live_matches)} live")
+
+    # ---------- REQUEST 2: all stream URLs, in parallel ----------
+    print("[all_sport_api] REQUEST 2: fetching all stream sources in parallel ...")
+
+    stream_map = {}   # gmid -> url
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        futures = {
+            pool.submit(fetch_stream, m["gmid"], headers): m["gmid"]
+            for m in live_matches
+        }
+        for fut in as_completed(futures):
+            gmid, url = fut.result()
+            stream_map[gmid] = url
+
+    # ---------- Build result list ----------
     matches = []
+    for m in live_matches:
+        matches.append({
+            "teams_name": m.get("ename", "Unknown"),
+            "team_two":   m.get("cname", ""),
+            "score":      m.get("sc", "vs"),
+            "start_time": m.get("stime", "Live"),
+            "iframe_source": stream_map.get(m.get("gmid")),
+            "m3u8_source": None,
+        })
 
-    if response.status_code == 200:
-        data = response.json()
+    print(f"[all_sport_api] Done. {len(matches)} live matches ready.")
+    print("=" * 60)
 
-        # NEW response structure
-        if "data" in data and "t1" in data["data"]:
-            for match in data["data"]["t1"]:
+    return render(request, "rapid/all_sport_api.html", {"matches": matches})
 
-                # only LIVE matches
-                if not match.get("iplay", False):
-                    continue
-
-                gmid = match.get("gmid")
-
-                matches.append({
-                    # keep old keys so template DOES NOT CHANGE
-                    "teams_name": match.get("ename", "Unknown"),
-                    "team_two": match.get("cname", "Unknown"),
-                    "score": match.get("sc", "vs"),
-                    "start_time": match.get("stime", "Live"),
-
-                    # iframe stream (constructed)
-                    "iframe_source": (
-                        f"https://livestream-v3-iframe.akamaized.uk/directStream"
-                        f"?gmid={gmid}&key=nokey"
-                        if gmid else None
-                    ),
-
-                    # this API does NOT provide m3u8
-                    "m3u8_source": None,
-                })
-        else:
-            print("Unexpected data format")
-
-    else:
-        print(f"Failed to fetch data: {response.status_code}")
-
-    context = {"matches": matches}
-    return render(request, "rapid/all_sport_api.html", context)
 
 def highlights(request):
     return render(request, 'rapid/highlights.html')
