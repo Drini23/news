@@ -1,118 +1,482 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Scores</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Live Scores | FutbollAL</title>
 
-    <!-- Icons + Font -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5.3 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap JS -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
+
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             background: #f2f2f2;
             margin: 0;
             padding: 0;
+            width: 100%;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .live-scores-container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 35px auto 50px;
             padding: 0 20px;
         }
 
+
+        /* =====================================================
+           HOME BUTTON
+        ===================================================== */
+
+        .home-button-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
         .home-btn {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            background: #007bff;
+            color: #ffffff;
+
+            padding: 12px 22px;
+
             border-radius: 8px;
+
             text-decoration: none;
+
+            font-size: 15px;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+
+            transition:
+                background-color 0.25s ease,
+                transform 0.2s ease;
         }
 
         .home-btn:hover {
-            background-color: #0056b3;
+            background: #0056b3;
+            color: #ffffff;
+            transform: translateY(-1px);
         }
 
-        iframe {
-            border: none;
+
+        /* =====================================================
+           PAGE TITLE
+        ===================================================== */
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #222;
+            margin: 0;
+        }
+
+        .page-title p {
+            margin-top: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           SCOREBAT WRAPPER
+        ===================================================== */
+
+        .scorebat-wrapper {
             width: 100%;
-            height: 760px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+            background: #ffffff;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.10);
+
+            position: relative;
         }
 
-        /* Make navbar compact */
-#mainNavbar {
-    padding-top: 1px !important;
-    padding-bottom: 1px !important;
-    min-height: 28px !important; /* small height */
-}
 
-/* Logo small */
-#mainNavbar .logo-img {
-    width: 10px !important;
-    transition: 0.2s;
-}
+        /* =====================================================
+           SCOREBAT IFRAME
+        ===================================================== */
 
-/* Shrink even more on scroll */
-#mainNavbar.shrink {
-    padding-top: 2px !important;
-    padding-bottom: 2px !important;
-    background-color: #111 !important;
-}
+        .scorebat-wrapper iframe {
+            display: block;
 
-#mainNavbar.shrink .logo-img {
-    width: 5px !important;
-}
+            width: 100%;
+
+            height: 760px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #ffffff;
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        #mainNavbar {
+            padding-top: 1px !important;
+            padding-bottom: 1px !important;
+
+            min-height: 28px !important;
+
+            transition:
+                background-color 0.25s ease,
+                padding 0.25s ease;
+        }
+
+
+        /* Logo */
+        #mainNavbar .logo-img {
+            width: 10px !important;
+            transition: 0.2s;
+        }
+
+
+        /* Navbar after scrolling */
+        #mainNavbar.shrink {
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+
+            background-color: #111 !important;
+        }
+
+        #mainNavbar.shrink .logo-img {
+            width: 5px !important;
+        }
+
+
+        /* =====================================================
+           TABLET
+        ===================================================== */
+
+        @media (max-width: 992px) {
+
+            .live-scores-container {
+                max-width: 100%;
+                margin-top: 30px;
+            }
+
+            .scorebat-wrapper iframe {
+                height: 780px;
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 768px) {
+
+            .live-scores-container {
+                width: 100%;
+
+                margin-top: 20px;
+                margin-bottom: 30px;
+
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+
+            .home-button-container {
+                margin-bottom: 18px;
+            }
+
+
+            .home-btn {
+                width: 100%;
+
+                padding: 11px 15px;
+
+                font-size: 14px;
+
+                border-radius: 7px;
+            }
+
+
+            .page-title {
+                margin-bottom: 15px;
+            }
+
+
+            .page-title h1 {
+                font-size: 23px;
+            }
+
+
+            .page-title p {
+                font-size: 13px;
+            }
+
+
+            .scorebat-wrapper {
+                width: 100%;
+
+                border-radius: 8px;
+
+                box-shadow:
+                    0 3px 12px rgba(0, 0, 0, 0.10);
+            }
+
+
+            .scorebat-wrapper iframe {
+                width: 100%;
+
+                height: 850px;
+
+                border-radius: 8px;
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL PHONES
+        ===================================================== */
+
+        @media (max-width: 576px) {
+
+            .live-scores-container {
+                max-width: 100%;
+
+                margin-top: 15px;
+
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+
+            .home-button-container {
+                padding: 0 5px;
+
+                margin-bottom: 15px;
+            }
+
+
+            .home-btn {
+                width: 100%;
+
+                padding: 10px 12px;
+
+                font-size: 14px;
+            }
+
+
+            .page-title h1 {
+                font-size: 21px;
+            }
+
+
+            .page-title p {
+                font-size: 12px;
+
+                margin-bottom: 12px;
+            }
+
+
+            .scorebat-wrapper {
+                border-radius: 7px;
+            }
+
+
+            .scorebat-wrapper iframe {
+                height: 850px;
+
+                border-radius: 7px;
+            }
+
+        }
+
+
+        /* =====================================================
+           VERY SMALL PHONES
+        ===================================================== */
+
+        @media (max-width: 380px) {
+
+            .live-scores-container {
+                padding-left: 3px;
+                padding-right: 3px;
+            }
+
+
+            .page-title h1 {
+                font-size: 19px;
+            }
+
+
+            .scorebat-wrapper iframe {
+                height: 850px;
+            }
+
+        }
 
     </style>
+
 </head>
+
 
 <body>
 
-    <!-- ✅ Navbar MUST be inside <body> -->
+
+    <!-- =====================================================
+         NAVBAR
+    ===================================================== -->
+
     {% include 'blog/navbar.html' %}
 
-    <div class="container">
-        <div class="text-center mb-4">
-            <a href="{% url 'home' %}" class="home-btn">
-                <i class="fas fa-home"></i> Kthehu në faqen kryesore
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ===================================================== -->
+
+    <main class="live-scores-container">
+
+
+        <!-- =================================================
+             HOME BUTTON
+        ================================================= -->
+
+        <div class="home-button-container">
+
+            <a
+                href="{% url 'home' %}"
+                class="home-btn"
+            >
+
+                <i class="fas fa-home"></i>
+
+                Kthehu në faqen kryesore
+
             </a>
+
         </div>
 
-        <div class="ratio ratio-16x9">
+
+
+    
+
+        <!-- =================================================
+             SCOREBAT LIVE SCORES
+        ================================================= -->
+
+        <div class="scorebat-wrapper">
+
             <iframe
-                src="https://www.scorebat.com/embed/livescore/?token=MjE0Mzg2XzE3NDg4OTI3NDhfYjY2OTczYTA1OGZhMDEwMWZhOGQ4NDg3YzQyMmUyYzRkMTY0YzllYw==&autoplay=1&muted=1&mobile=1"
+                src="https://www.scorebat.com/embed/livescore/?token=MjE0Mzg2XzE3OTAwMjU5OTlfMWE5YTA0YmNjN2Y2ZTM1YWU4NzM0NTg5YTM5ZmFiN2ZhNzkzODRmZA=="
+                title="Live Football Scores"
+                loading="lazy"
                 allow="autoplay; fullscreen; encrypted-media"
                 allowfullscreen
                 webkitallowfullscreen
-                mozallowfullscreen
-                style="border:none; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                mozallowfullscreen>
             </iframe>
+
         </div>
-    </div>
 
-    <!-- ScoreBat script -->
+
+    </main>
+
+
+
+    <!-- =====================================================
+         NAVBAR SCROLL EFFECT
+    ===================================================== -->
+
     <script>
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = 'https://www.scorebat.com/embed/embed.js?v=arrv';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'scorebat-jssdk'));
 
-   
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const navbar = document.getElementById("mainNavbar");
+
+            if (!navbar) {
+                return;
+            }
+
+            window.addEventListener("scroll", function () {
+
+                if (window.scrollY > 50) {
+
+                    navbar.classList.add("shrink");
+
+                } else {
+
+                    navbar.classList.remove("shrink");
+
+                }
+
+            });
+
+        });
+
     </script>
 
+
 </body>
+
 </html>
+```
