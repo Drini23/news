@@ -559,14 +559,15 @@
                 dhe lajmet më të fundit të futbollit — 24 orë në ditë, 7 ditë në javë.
             </p>
             <div class="hero-actions">
+                
+                <a class="btn-fa btn-fa-accent" href="{% url 'today_matches' %}">
+                    <i class="fas fa-calendar-day"></i>
+                    Ndeshjet e Sotme
+                </a>
                 <a class="btn-fa btn-fa-primary" href="{% url 'all_sport_api' %}">
                     <i class="fas fa-bolt"></i>
                     Ndeshjet Live
                     <span class="live-pill">LIVE</span>
-                </a>
-                <a class="btn-fa btn-fa-accent" href="{% url 'today_matches' %}">
-                    <i class="fas fa-calendar-day"></i>
-                    Ndeshjet e Sotme
                 </a>
                 <a class="btn-fa btn-fa-ghost" href="{% url 'live_matches' %}">
                     <i class="fas fa-trophy"></i>
@@ -603,58 +604,7 @@
             </div>
         </section>
 
-        <!-- ===== LIVE NOW STRIP =====
-             Uses the `matches` context that all_sport_api already builds.
-             If you don't render this view on the homepage, just remove this block. -->
-        {% if matches %}
-        <section class="live-strip reveal" aria-labelledby="live-now-title">
-            <h2 class="section-title" id="live-now-title">
-                <i class="fas fa-circle" style="color:#ef4444; font-size: 0.65rem;"></i>
-                Ndeshje Live Tani
-            </h2>
-            <div class="live-grid">
-                {% for match in matches|slice:":6" %}
-                <article class="live-card">
-                    <span class="live-tag">LIVE</span>
-                    <h4>{{ match.teams_name }}</h4>
-                    <div class="meta">
-                        {% if match.team_two %}
-                        <span><i class="fas fa-trophy"></i> {{ match.team_two }}</span>
-                        {% endif %}
-                        {% if match.start_time %}
-                        <span><i class="fas fa-clock"></i> {{ match.start_time }}</span>
-                        {% endif %}
-                    </div>
-                    {% if match.iframe_source %}
-                    <a class="watch-link" href="{{ match.iframe_source }}" target="_blank" rel="noopener">
-                        <i class="fas fa-play"></i> Shiko
-                    </a>
-                    {% else %}
-                    <a class="watch-link" href="{% url 'all_sport_api' %}">
-                        <i class="fas fa-info-circle"></i> Detaje
-                    </a>
-                    {% endif %}
-                </article>
-                {% endfor %}
-            </div>
-            <div style="text-align:center; margin-top:22px;">
-                <a class="btn-fa btn-fa-primary" href="{% url 'all_sport_api' %}">
-                    <i class="fas fa-list"></i> Shiko Të Gjitha
-                </a>
-            </div>
-        </section>
-        {% else %}
-        <section class="live-strip reveal">
-            <h2 class="section-title">
-                <i class="fas fa-circle" style="color:#ef4444; font-size: 0.65rem;"></i>
-                Ndeshje Live Tani
-            </h2>
-            <div class="live-empty">
-                Nuk ka ndeshje live për momentin. Kthehu së shpejti!
-            </div>
-        </section>
-        {% endif %}
-
+   
         <!-- ===== FEATURES ===== -->
         <section class="features">
             <article class="info-card reveal">
