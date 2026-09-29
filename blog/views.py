@@ -8,103 +8,26 @@ from datetime import date, datetime
 from football.settings import  NEWS_API, RAPID_API, FOOTBALL_API
 
 
-from django.shortcuts import render
 from django_ratelimit.decorators import ratelimit
 from django.core.cache import cache
 
 
 from django.http import JsonResponse
 from django.utils.timezone import now
+import requests
+from django.conf import settings
+from django.shortcuts import render
+from django.utils import timezone as django_tz
+from django.utils.dateparse import parse_datetime
 
 
 def home(request):
-    url = "https://football-live-streaming-api.p.rapidapi.com/matches"
-    headers = {
-        "x-rapidapi-key": "ff182b108amshf8e8d9cb53258dbp193014jsn90d493c12420",
-        "x-rapidapi-host": "football-live-streaming-api.p.rapidapi.com"
-    }
+    
 
-    top_leagues = [
-        "Premier League",
-        "La Liga",
-        "Serie A",
-        "Bundesliga",
-        "Ligue 1",
-        "UEFA Champions League",
-        "UEFA Europa League",
-        "FIFA World Cup"
-    ]
-
-    matches = []
-    page = 1
-    max_matches = 20
-
-    while True:
-        querystring = {"page": str(page), "status": "all"}
-        response = requests.get(url, headers=headers, params=querystring)
-        if response.status_code != 200:
-            print("❌ ERROR:", response.status_code)
-            break
-
-        data = response.json()
-        current_page_matches = data.get("matches", [])
-
-        if not current_page_matches:
-            break
-
-        for match in current_page_matches:
-            league_name = match.get("league_name", "")
-            status = match.get("status")  # live, upcoming, finished
-            match_time_raw = match.get("match_time")  # string or int
-
-            # Convert to local time safely
-            match_time = "TBD"
-            local_tz = pytz.timezone("Europe/Warsaw")  # change to your timezone
-            try:
-                if isinstance(match_time_raw, str):
-                    utc_dt = datetime.strptime(match_time_raw, "%Y-%m-%dT%H:%M:%SZ")
-                    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-                    match_time = local_dt.strftime("%H:%M")
-                elif isinstance(match_time_raw, int):
-                    # treat as Unix timestamp
-                    utc_dt = datetime.utcfromtimestamp(match_time_raw)
-                    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-                    match_time = local_dt.strftime("%H:%M")
-            except Exception as e:
-                print("❌ Time parse error:", match_time_raw, e)
-
-            matches.append({
-                "home": match.get("home_team_name"),
-                "away": match.get("away_team_name"),
-                "home_logo": match.get("home_team_logo"),
-                "away_logo": match.get("away_team_logo"),
-                "time": match_time,
-                "league": league_name,
-                "status": status
-            })
-
-            if len(matches) >= max_matches:
-                break
-
-        if len(matches) >= max_matches:
-            break
-
-        page += 1
-
-    # Sort: live first, then top leagues
-    matches.sort(key=lambda x: (
-        0 if x['status'] == "live" else 1,
-        0 if x['league'] in top_leagues else 1
-    ))
-
-    return render(request, "blog/home.html", {"matches": matches})
+    return render(request, "blog/home.html")
     
     
     
-   
-
-
-
 def today_matches(request):
     return render(request, 'blog/today_matches.html')
 
@@ -123,89 +46,88 @@ def fetch_team_details(team_id, headers):
 
 
 
+BIGBALLS_API_KEY = getattr(settings, "BIGBALLS_API_KEY", "bbs_live_00000jMuCxA4SF6fwMYpBOfyPwmQOQsoUtwfhKJFkfUyK9lO")
+BIGBALLS_URL = "https://api.bigballsdata.com/v1/matches"
+
+
 def match_details_1(request):
-    url = "https://football-live-streaming-api.p.rapidapi.com/matches"
     headers = {
-        "x-rapidapi-key": RAPID_API,
-        "x-rapidapi-host": "football-live-streaming-api.p.rapidapi.com"
+        "x-api-key": BIGBALLS_API_KEY,
+        "Accept": "application/json"
     }
 
-    top_leagues = [
-        "Premier League",
-        "La Liga",
-        "Serie A",
-        "Bundesliga",
-        "Ligue 1",
-        "UEFA Champions League",
-        "UEFA Europa League",
-        "FIFA World Cup"
-    ]
-
+    # Standard league identifiers for the API
+    leagues_to_check = ["epl", "laliga", "seriea", "bundesliga", "ligue1", "ucl"]
     matches = []
-    page = 1
-    max_matches = 20
+    local_tz = django_tz.get_current_timezone()
 
-    while True:
-        querystring = {"page": str(page), "status": "all"}
-        response = requests.get(url, headers=headers, params=querystring)
-        if response.status_code != 200:
-            print("❌ ERROR:", response.status_code)
-            break
+    print("\n" + "=" * 60)
+    print("⚽ FETCHING TODAY'S MATCHES LOG")
+    print("=" * 60)
 
-        data = response.json()
-        current_page_matches = data.get("matches", [])
+    for league in leagues_to_check:
+        params = {
+            "sport": "football",
+            "league": league,
+            "date": "today"  # Strictly filter for today
+        }
 
-        if not current_page_matches:
-            break
+        try:
+            response = requests.get(BIGBALLS_URL, headers=headers, params=params, timeout=5)
 
-        for match in current_page_matches:
-            league_name = match.get("league_name", "")
-            status = match.get("status")  
-            match_time_raw = match.get("match_time")  
+            if response.status_code == 200:
+                json_data = response.json()
+                raw_matches = json_data.get("data") or json_data.get("matches") or []
 
-            # Convert to local time safely
-            match_time = "TBD"
-            local_tz = pytz.timezone("Europe/Warsaw")  
-            try:
-                if isinstance(match_time_raw, str):
-                    utc_dt = datetime.strptime(match_time_raw, "%Y-%m-%dT%H:%M:%SZ")
-                    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-                    match_time = local_dt.strftime("%H:%M")
-                elif isinstance(match_time_raw, int):
-                    # treat as Unix timestamp
-                    utc_dt = datetime.utcfromtimestamp(match_time_raw)
-                    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-                    match_time = local_dt.strftime("%H:%M")
-            except Exception as e:
-                print("❌ Time parse error:", match_time_raw, e)
+                print(f"--> [{league.upper()}] Matches found today: {len(raw_matches)}")
 
-            matches.append({
-                "home": match.get("home_team_name"),
-                "away": match.get("away_team_name"),
-                "home_logo": match.get("home_team_logo"),
-                "away_logo": match.get("away_team_logo"),
-                "time": match_time,
-                "league": league_name,
-                "status": status
-            })
+                for match in raw_matches:
+                    home_obj = match.get("home") or match.get("home_team") or {}
+                    away_obj = match.get("away") or match.get("away_team") or {}
 
-            if len(matches) >= max_matches:
-                break
+                    home_name = home_obj.get("name") if isinstance(home_obj, dict) else str(home_obj or "Home")
+                    away_name = away_obj.get("name") if isinstance(away_obj, dict) else str(away_obj or "Away")
 
-        if len(matches) >= max_matches:
-            break
+                    scores = match.get("score") or match.get("scores") or {}
+                    home_goals = scores.get("home", 0) if isinstance(scores, dict) else 0
+                    away_goals = scores.get("away", 0) if isinstance(scores, dict) else 0
 
-        page += 1
+                    league_obj = match.get("league") or match.get("tournament") or league.upper()
+                    tournament = league_obj.get("name") if isinstance(league_obj, dict) else str(league_obj)
 
-    # Sort: live first, then top leagues
-    matches.sort(key=lambda x: (
-        0 if x['status'] == "live" else 1,
-        0 if x['league'] in top_leagues else 1
-    ))
+                    status = str(match.get("status", "")).lower()
+                    is_live = status in ["live", "in_play", "in-progress"]
+
+                    if is_live:
+                        match_time = match.get("clock") or match.get("minute") or "LIVE"
+                    else:
+                        raw_time = match.get("start_time") or match.get("kickoff_utc") or match.get("date")
+                        match_time = "TBD"
+                        if raw_time:
+                            dt = parse_datetime(str(raw_time))
+                            if dt:
+                                if django_tz.is_naive(dt):
+                                    dt = django_tz.make_aware(dt, pytz.timezone.utc)
+                                match_time = dt.astimezone(local_tz).strftime("%H:%M")
+
+                    match_info = {
+                        "home_team": home_name,
+                        "away_team": away_name,
+                        "teams_name": f"{home_name} vs {away_name}",
+                        "goals": f"{home_goals} - {away_goals}",
+                        "tournament": tournament,
+                        "time": match_time,
+                        "status": "live" if is_live else status,
+                    }
+                    matches.append(match_info)
+
+                    # Print strictly today's matches
+                    print(f"  📌 [{tournament}] {match_time} | {home_name} {home_goals}-{away_goals} {away_name} ({status})")
+
+        except requests.RequestException as e:
+            print(f"❌ Error fetching {league}: {e}")
+
+    print(f"\nTOTAL MATCHES TODAY: {len(matches)}")
+    print("=" * 60 + "\n")
 
     return render(request, "blog/match_details_1.html", {"matches": matches})
-
-
-
-
-

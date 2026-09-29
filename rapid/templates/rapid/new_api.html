@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ndeshjet e Sotme | Live Football</title>
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -162,9 +160,15 @@
             opacity:0.9;
         }
 
-        .watch-btn.loading{
-            opacity:0.7;
-            pointer-events:none;
+        .watch-btn.disabled{
+            background:#475569;
+            cursor:not-allowed;
+            opacity:0.6;
+        }
+
+        .watch-btn.disabled:hover{
+            transform:none;
+            opacity:0.6;
         }
 
         .empty{
@@ -266,19 +270,33 @@
                     </span>
 
                     <span>
-                        {{ match.status }}
+                        {{ match.raw_status }}
                     </span>
                 </div>
 
             </div>
 
-            <button
-                class="watch-btn"
-                onclick="openStream('{{ match.id }}', this)"
-            >
-                <i class="fa-solid fa-play"></i>
-                Shiko Live
-            </button>
+            {% if match.status == "LIVE" %}
+
+                <button
+                    class="watch-btn"
+                    onclick="openStream('{{ match.id }}', this)"
+                >
+                    <i class="fa-solid fa-play"></i>
+                    Shiko Live
+                </button>
+
+            {% else %}
+
+                <button
+                    class="watch-btn disabled"
+                    disabled
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                    Ndeshja ka mbaruar
+                </button>
+
+            {% endif %}
 
         </div>
 
@@ -299,46 +317,11 @@
 
 <script>
 
-async function openStream(matchId, button){
+function openStream(matchId, button){
 
-    const originalText = button.innerHTML;
+    console.log("MATCH ID:", matchId);
 
-    button.classList.add("loading");
-
-    button.innerHTML = `
-        <i class="fa-solid fa-spinner fa-spin"></i>
-        Duke hapur...
-    `;
-
-    try{
-
-        console.log("MATCH ID:", matchId);
-
-        const response = await fetch(`/rapid/stream/${matchId}/`);
-
-        console.log("RESPONSE:", response);
-
-        const text = await response.text();
-
-        console.log("RAW RESPONSE:", text);
-
-        button.classList.remove("loading");
-
-        button.innerHTML = originalText;
-
-        window.location.href = `/rapid/stream/${matchId}/`;
-
-    }catch(error){
-
-        console.log("ERROR:", error);
-
-        alert("Gabim ne hapjen e stream");
-
-        button.classList.remove("loading");
-
-        button.innerHTML = originalText;
-
-    }
+    window.location.href = `/rapid/stream/${matchId}/`;
 
 }
 

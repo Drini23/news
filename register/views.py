@@ -19,7 +19,7 @@ def login_view(request):
             login(request, ueser)
             return redirect('home')
         else:
-            return HttpResponse('Invalid credentials')
+            return HttpResponse('Emri i përdoruesit ose fjalëkalimi është i pasaktë. Ju lutemi provoni përsëri.')
     context = {"login_view": "active"}
     
     return render(request, 'register/login.html', context)

@@ -7,6 +7,9 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from django.shortcuts import render
 
+from index.decorators import paywall
+from django.contrib.auth.decorators import login_required
+
 
 BASE_URL = "https://all-sport-live-stream.p.rapidapi.com"
 
@@ -41,8 +44,10 @@ def fetch_stream(gmid, headers):
     except Exception as e:
         print(f"[stream] gmid={gmid} ERROR: {e}")
         return gmid, None
-
-
+    
+    
+@login_required(login_url='login')
+@paywall
 def all_sport_api(request):
     headers = {
         "x-rapidapi-key": S_ALL_SPORT_API,
@@ -110,12 +115,12 @@ def highlights(request):
 
 
 
-
+import base64
 import requests
+from django.http import HttpResponse
 from django.shortcuts import render
-from django.http import JsonResponse
 
-API_KEY = "ff182b108amshf8e8d9cb53258dbp193014jsn90d493c12420"
+API_KEY = S_ALL_SPORT_API  
 
 HEADERS = {
     "x-rapidapi-key": API_KEY,
@@ -131,28 +136,39 @@ def new_api(request):
 
     try:
 
-        response = requests.get(
-            url,
-            headers=HEADERS,
-            timeout=10
-        )
+        response = requests.get(url, headers=HEADERS, timeout=10)
 
         print("STATUS:", response.status_code)
 
         data = response.json()
 
-        print("API RESPONSE:", data)
-
         if response.status_code == 200:
 
             for match in data.get("result", []):
 
+                match_id = match.get("id")
+                raw_status = match.get("status", "N/A") or "N/A"
+
+                # Normalize: "Live" -> "LIVE", "Finished" -> "FINISHED"
+                status = raw_status.strip().upper()
+
+                print(
+                    "MATCH:",
+                    match.get("home_name"),
+                    "vs",
+                    match.get("away_name"),
+                    "| ID:", match_id,
+                    "| RAW:", raw_status,
+                    "| NORM:", status,
+                )
+
                 matches.append({
-                    "id": match.get("id"),
+                    "id": match_id,
                     "home_name": match.get("home_name", "Unknown"),
                     "away_name": match.get("away_name", "Unknown"),
                     "score": match.get("score", "0 - 0"),
-                    "status": match.get("status", "N/A"),
+                    "status": status,
+                    "raw_status": raw_status,
                 })
 
     except requests.exceptions.RequestException as e:
@@ -162,28 +178,48 @@ def new_api(request):
     return render(request, "rapid/new_api.html", {
         "matches": matches
     })
-    
-    
-    
-import base64
+
+
+import requests
+from django.http import HttpResponse
+from django.shortcuts import render
 
 def get_stream(request, match_id):
 
+    print("=" * 60)
+    print("GET_STREAM CALLED WITH ID:", match_id)
+    print("=" * 60)
+
     url = f"https://football-live-stream-api.p.rapidapi.com/link/{match_id}"
 
-    response = requests.get(url, headers=HEADERS)
-    data = response.json()
-
-    raw = data.get("url")
-
-    # extract base64 part
     try:
-        encoded = raw.split("url=")[1]
-        decoded_url = base64.b64decode(encoded).decode("utf-8")
 
-    except:
-        decoded_url = raw
+        response = requests.get(url, headers=HEADERS, timeout=10)
 
-    return render(request, "rapid/player.html", {
-        "stream_url": decoded_url
-    })
+        print("STREAM STATUS:", response.status_code)
+        print("STREAM RAW TEXT:", response.text)
+
+        data = response.json()
+
+        stream_url = data.get("url")
+
+        if not stream_url:
+            return HttpResponse(
+                f"API returned no URL for match ID: {match_id}<br>"
+                f"Raw response: {response.text}",
+                status=404
+            )
+
+        # The API already returns a full, usable URL.
+        # No base64 decoding needed.
+        print("FINAL STREAM URL:", stream_url)
+
+        return render(request, "rapid/player.html", {
+            "stream_url": stream_url
+        })
+
+    except Exception as e:
+
+        print("STREAM ERROR:", e)
+
+        return HttpResponse(f"Stream error: {e}", status=500)
