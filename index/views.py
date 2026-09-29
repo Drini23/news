@@ -17,7 +17,7 @@ from .access import has_active_subscription
 # =========================================================
 
 def stripe_config():
-    """Return (api_key, price_id, webhook_secret) based on DEBUG."""
+    """Return (api_key, recurring_price_id, webhook_secret) based on DEBUG."""
     if settings.DEBUG:
         return (
             settings.STRIPE_SECRET_KEY_TEST,
@@ -32,8 +32,13 @@ def stripe_config():
 
 
 def configure_stripe():
-    """Set stripe.api_key globally for the current request. Returns the key."""
+    """Set stripe.api_key globally. Returns the key."""
     key, _, _ = stripe_config()
+    if not key:
+        raise RuntimeError(
+            f"Stripe API key is empty. DEBUG={settings.DEBUG}. "
+            f"Check your environment variables."
+        )
     stripe.api_key = key
     print(f"💳 [stripe] mode={'TEST' if settings.DEBUG else 'LIVE'} key={key[:8]}...")
     return key
@@ -79,9 +84,14 @@ def subscribe_recurring(request):
     if has_active_subscription(request.user):
         return redirect("success")
 
-    # --- Set the right key + pick the right price ID ---
     configure_stripe()
     _, price_id, _ = stripe_config()
+
+    if not price_id:
+        raise RuntimeError(
+            f"Stripe price ID is empty. DEBUG={settings.DEBUG}. "
+            f"Check STRIPE_RECURRING_PRICE_ID{' _TEST' if settings.DEBUG else ''}."
+        )
 
     customer_id = get_or_create_stripe_customer(request.user)
 
@@ -190,28 +200,38 @@ def customer_portal(request):
 
 
 # =========================================================
-#  WEBHOOK
+#  WEBHOOK  (with signature verification)
 # =========================================================
 
 @csrf_exempt
 @require_POST
 def stripe_webhook(request):
-    payload = request.body
-    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-
-    # Pick the correct webhook secret for the environment
-    _, _, webhook_secret = stripe_config()
     configure_stripe()
+    _, _, webhook_secret = stripe_config()
 
+    if not webhook_secret:
+        print("⚠️ [webhook] no webhook secret configured — rejecting")
+        return HttpResponse(status=400)
+
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
+
+    # Verify the request actually came from Stripe
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, webhook_secret
         )
-    except (ValueError, stripe.SignatureVerificationError):
+    except ValueError as e:
+        print("❌ [webhook] invalid payload:", e)
+        return HttpResponse(status=400)
+    except stripe.SignatureVerificationError as e:
+        print("❌ [webhook] invalid signature:", e)
         return HttpResponse(status=400)
 
     event_type = event["type"]
     data = event["data"]["object"]
+
+    print(f"🔔 [webhook] verified event: {event_type}")
 
     # ---------- Checkout completed ----------
     if event_type == "checkout.session.completed":
@@ -235,16 +255,16 @@ def stripe_webhook(request):
 
     # ---------- Subscription created / updated ----------
     elif event_type in ("customer.subscription.created", "customer.subscription.updated"):
-        sub = Subscription.objects.filter(stripe_subscription_id=data.id).first()
+        sub = Subscription.objects.filter(stripe_subscription_id=data.get("id")).first()
         if not sub:
-            sub = Subscription.objects.filter(stripe_customer_id=data.customer).first()
+            sub = Subscription.objects.filter(stripe_customer_id=data.get("customer")).first()
         if sub:
             period_end_ts = _get_period_end(data)
 
             sub.plan_type = "recurring"
-            sub.stripe_subscription_id = data.id
-            sub.status = data.status
-            sub.auto_renew = data.status in ("active", "trialing")
+            sub.stripe_subscription_id = data.get("id")
+            sub.status = data.get("status")
+            sub.auto_renew = data.get("status") in ("active", "trialing")
 
             if period_end_ts:
                 sub.current_period_end = datetime.fromtimestamp(
@@ -255,7 +275,7 @@ def stripe_webhook(request):
 
     # ---------- Subscription canceled ----------
     elif event_type == "customer.subscription.deleted":
-        sub = Subscription.objects.filter(stripe_subscription_id=data.id).first()
+        sub = Subscription.objects.filter(stripe_subscription_id=data.get("id")).first()
         if sub:
             sub.status = "canceled"
             sub.auto_renew = False
@@ -263,7 +283,7 @@ def stripe_webhook(request):
 
     # ---------- Payment failed ----------
     elif event_type == "invoice.payment_failed":
-        sub = Subscription.objects.filter(stripe_customer_id=data.customer).first()
+        sub = Subscription.objects.filter(stripe_customer_id=data.get("customer")).first()
         if sub:
             sub.status = "past_due"
             sub.save()
