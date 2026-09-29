@@ -11,7 +11,32 @@ from django.urls import reverse
 from .models import Subscription
 from .access import has_active_subscription
 
-stripe.api_key = settings.STRIPE_SECRET_KEY_TEST
+
+# =========================================================
+#  STRIPE MODE HELPERS  (test locally, live on Railway)
+# =========================================================
+
+def stripe_config():
+    """Return (api_key, price_id, webhook_secret) based on DEBUG."""
+    if settings.DEBUG:
+        return (
+            settings.STRIPE_SECRET_KEY_TEST,
+            settings.STRIPE_RECURRING_PRICE_ID_TEST,
+            settings.STRIPE_WEBHOOK_SECRET_TEST,
+        )
+    return (
+        settings.STRIPE_SECRET_KEY,
+        settings.STRIPE_RECURRING_PRICE_ID,
+        settings.STRIPE_WEBHOOK_SECRET,
+    )
+
+
+def configure_stripe():
+    """Set stripe.api_key globally for the current request. Returns the key."""
+    key, _, _ = stripe_config()
+    stripe.api_key = key
+    print(f"💳 [stripe] mode={'TEST' if settings.DEBUG else 'LIVE'} key={key[:8]}...")
+    return key
 
 
 # =========================================================
@@ -19,6 +44,8 @@ stripe.api_key = settings.STRIPE_SECRET_KEY_TEST
 # =========================================================
 
 def get_or_create_stripe_customer(user):
+    configure_stripe()
+
     sub, _ = Subscription.objects.get_or_create(user=user)
     if sub.stripe_customer_id:
         return sub.stripe_customer_id
@@ -35,11 +62,9 @@ def get_or_create_stripe_customer(user):
 def _get_period_end(stripe_sub):
     """Return period end timestamp. Handles old and new Stripe SDKs."""
     try:
-        # New SDK (v8+): items is a method
         return stripe_sub.items().data[0].current_period_end
     except (AttributeError, TypeError, IndexError):
         try:
-            # Fallback: some SDK versions expose it directly
             return stripe_sub.current_period_end
         except AttributeError:
             return None
@@ -54,6 +79,10 @@ def subscribe_recurring(request):
     if has_active_subscription(request.user):
         return redirect("success")
 
+    # --- Set the right key + pick the right price ID ---
+    configure_stripe()
+    _, price_id, _ = stripe_config()
+
     customer_id = get_or_create_stripe_customer(request.user)
 
     base_success = request.build_absolute_uri(reverse("success"))
@@ -63,7 +92,7 @@ def subscribe_recurring(request):
         mode="subscription",
         payment_method_types=["card"],
         line_items=[{
-            "price": settings.STRIPE_RECURRING_PRICE_ID,
+            "price": price_id,
             "quantity": 1,
         }],
         customer=customer_id,
@@ -81,6 +110,8 @@ def subscribe_recurring(request):
 
 @login_required
 def success_page(request):
+    configure_stripe()
+
     session_id = request.GET.get("session_id", "")
     print("🔍 [success] session_id from URL:", session_id)
 
@@ -115,7 +146,6 @@ def success_page(request):
                     )
 
                 sub.save()
-
                 print("✅ [success] SAVED. is_active:", sub.is_active)
 
         except stripe.StripeError as e:
@@ -146,6 +176,8 @@ def pricing(request):
 
 @login_required
 def customer_portal(request):
+    configure_stripe()
+
     sub = get_object_or_404(Subscription, user=request.user)
     if not sub.stripe_customer_id:
         return redirect("pricing")
@@ -167,9 +199,13 @@ def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
 
+    # Pick the correct webhook secret for the environment
+    _, _, webhook_secret = stripe_config()
+    configure_stripe()
+
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET_TEST
+            payload, sig_header, webhook_secret
         )
     except (ValueError, stripe.SignatureVerificationError):
         return HttpResponse(status=400)
