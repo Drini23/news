@@ -5,7 +5,7 @@ import pytz
 
 from urllib.parse import quote
 from datetime import date, datetime
-from football.settings import  NEWS_API, RAPID_API, FOOTBALL_API
+from football.settings import  NEWS_API, RAPID_API, FOOTBALL_API, BIGBALLS_API_KEY
 
 
 from django_ratelimit.decorators import ratelimit
@@ -46,11 +46,14 @@ def fetch_team_details(team_id, headers):
 
 
 
-BIGBALLS_API_KEY = getattr(settings, "BIGBALLS_API_KEY", "bbs_live_00000jMuCxA4SF6fwMYpBOfyPwmQOQsoUtwfhKJFkfUyK9lO")
+BIGBALLS_API_KEY = settings.BIGBALLS_API_KEY
 BIGBALLS_URL = "https://api.bigballsdata.com/v1/matches"
 
 
 def match_details_1(request):
+    
+
+
     headers = {
         "x-api-key": BIGBALLS_API_KEY,
         "Accept": "application/json"
@@ -131,3 +134,7 @@ def match_details_1(request):
     print("=" * 60 + "\n")
 
     return render(request, "blog/match_details_1.html", {"matches": matches})
+
+
+def about(request):
+    return render(request, "blog/about.html")

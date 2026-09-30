@@ -40,6 +40,7 @@ S_ALL_SPORT_API = os.getenv("ALL_SPORT_API")
 SECRET_KEY = os.getenv("SECRET_KEY")
 FOOTBALL_LIVE_STREAMING_API = os.getenv("FOOTBALL_LIVE_STREAMING_API")
 TRANSFER_NEWS_API = os.getenv("TRANSFER_NEWS_API")
+BIGBALLS_API_KEY = os.getenv("BIGBALLS_API_KEY")
 
 
 # ===== Stripe — Test mode (local only) =====

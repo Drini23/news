@@ -1,14 +1,16 @@
-import requests
-from django.shortcuts import render
 from football.settings import S_ALL_SPORT_API
 from functools import lru_cache
-
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from django.shortcuts import render
-
 from index.decorators import paywall
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+import base64
+
+
+
+
 
 
 BASE_URL = "https://all-sport-live-stream.p.rapidapi.com"
@@ -115,12 +117,7 @@ def highlights(request):
 
 
 
-import base64
-import requests
-from django.http import HttpResponse
-from django.shortcuts import render
-
-API_KEY = S_ALL_SPORT_API  
+API_KEY = S_ALL_SPORT_API
 
 HEADERS = {
     "x-rapidapi-key": API_KEY,
@@ -129,28 +126,30 @@ HEADERS = {
 
 
 def new_api(request):
-
     url = "https://football-live-stream-api.p.rapidapi.com/all-match"
 
     matches = []
 
     try:
-
         response = requests.get(url, headers=HEADERS, timeout=10)
-
         print("STATUS:", response.status_code)
 
         data = response.json()
 
         if response.status_code == 200:
+            result = data.get("result", [])
 
-            for match in data.get("result", []):
+            # ---- Debug: print keys of the first match once ----
+            if result:
+                print("=" * 60)
+                print("FIRST MATCH KEYS:", list(result[0].keys()))
+                print("FIRST MATCH:", result[0])
+                print("=" * 60)
 
+            for match in result:
                 match_id = match.get("id")
                 raw_status = match.get("status", "N/A") or "N/A"
-
-                # Normalize: "Live" -> "LIVE", "Finished" -> "FINISHED"
-                status = raw_status.strip().upper()
+                status = raw_status.strip().upper()   # "Live" -> "LIVE"
 
                 print(
                     "MATCH:",
@@ -163,29 +162,41 @@ def new_api(request):
                 )
 
                 matches.append({
-                    "id": match_id,
-                    "home_name": match.get("home_name", "Unknown"),
-                    "away_name": match.get("away_name", "Unknown"),
-                    "score": match.get("score", "0 - 0"),
-                    "status": status,
-                    "raw_status": raw_status,
+                    "id":          match_id,
+
+                    # Teams
+                    "home_name":   match.get("home_name", "Unknown"),
+                    "away_name":   match.get("away_name", "Unknown"),
+                    "home_flag":   match.get("home_flag", ""),
+                    "away_flag":   match.get("away_flag", ""),
+
+                    # League / competition
+                    "league": (
+                        match.get("league")
+                        or match.get("league_name")
+                        or match.get("competition")
+                        or match.get("tournament")
+                        or ""
+                    ),
+
+                    # Date / time
+                    "date":        match.get("date", ""),
+                    "time":        match.get("time", ""),
+                    "kickoff":     match.get("kickoff", ""),
+
+                    # Score / status
+                    "score":       match.get("score", "0 - 0"),
+                    "status":      status,
+                    "raw_status":  raw_status,
                 })
 
     except requests.exceptions.RequestException as e:
-
         print("API ERROR:", e)
 
-    return render(request, "rapid/new_api.html", {
-        "matches": matches
-    })
+    return render(request, "rapid/new_api.html", {"matches": matches})
 
-
-import requests
-from django.http import HttpResponse
-from django.shortcuts import render
 
 def get_stream(request, match_id):
-
     print("=" * 60)
     print("GET_STREAM CALLED WITH ID:", match_id)
     print("=" * 60)
@@ -193,33 +204,34 @@ def get_stream(request, match_id):
     url = f"https://football-live-stream-api.p.rapidapi.com/link/{match_id}"
 
     try:
-
         response = requests.get(url, headers=HEADERS, timeout=10)
-
         print("STREAM STATUS:", response.status_code)
         print("STREAM RAW TEXT:", response.text)
 
         data = response.json()
+        stream_url = (data.get("url") or "").strip()
 
-        stream_url = data.get("url")
-
+        # --- No stream available: render the player page in "error" mode ---
         if not stream_url:
-            return HttpResponse(
-                f"API returned no URL for match ID: {match_id}<br>"
-                f"Raw response: {response.text}",
-                status=404
-            )
+            print("NO STREAM URL — rendering error state")
+            return render(request, "rapid/player.html", {
+                "stream_url": None,
+                "error": "Ky transmetim nuk është i disponueshëm për momentin.",
+                "match_id": match_id,
+            })
 
-        # The API already returns a full, usable URL.
-        # No base64 decoding needed.
         print("FINAL STREAM URL:", stream_url)
 
         return render(request, "rapid/player.html", {
-            "stream_url": stream_url
+            "stream_url": stream_url,
+            "error": None,
+            "match_id": match_id,
         })
 
     except Exception as e:
-
         print("STREAM ERROR:", e)
-
-        return HttpResponse(f"Stream error: {e}", status=500)
+        return render(request, "rapid/player.html", {
+            "stream_url": None,
+            "error": f"Gabim gjatë ngarkimit: {e}",
+            "match_id": match_id,
+        })

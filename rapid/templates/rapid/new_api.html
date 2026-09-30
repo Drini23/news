@@ -6,198 +6,304 @@
     <title>Ndeshjet e Sotme | Live Football</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+            padding: 30px 15px;
         }
 
-        body{
-            font-family:'Poppins', sans-serif;
-            background:#0f172a;
-            color:white;
-            min-height:100vh;
-            padding:30px 15px;
+        .container { max-width: 1100px; margin: auto; }
+
+        /* ===== HEADER ===== */
+        .header { text-align: center; margin-bottom: 40px; }
+
+        .header-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .container{
-            max-width:1100px;
-            margin:auto;
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: 0.25s ease;
+        }
+        .home-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+            color: #7dd3fc;
+        }
+        .home-btn.accent {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+        .home-btn.accent:hover {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #4ade80;
         }
 
-        .header{
-            text-align:center;
-            margin-bottom:40px;
+        .header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #38bdf8, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p { color: #94a3b8; font-size: 16px; }
+
+        /* ===== MATCHES GRID ===== */
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
         }
 
-        .header h1{
-            font-size:42px;
-            font-weight:700;
-            margin-bottom:10px;
-            background:linear-gradient(to right,#38bdf8,#22c55e);
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
+        .match-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .match-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
-        .header p{
-            color:#94a3b8;
-            font-size:16px;
+        /* ===== LEAGUE BADGE ===== */
+        .league-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: #7dd3fc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 18px;
+            max-width: calc(100% - 70px);   /* leave room for live badge */
+        }
+        .league-badge i { color: #facc15; }
+        .league-badge span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .matches-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-            gap:25px;
+        /* ===== LIVE BADGE ===== */
+        .live-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 5px 11px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            animation: pulse 1.5s infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-badge i { font-size: 7px; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0.55; }
         }
 
-        .match-card{
-            background:#1e293b;
-            border-radius:20px;
-            padding:25px;
-            position:relative;
-            overflow:hidden;
-            transition:0.3s ease;
-            border:1px solid rgba(255,255,255,0.05);
+        /* ===== TEAMS ===== */
+        .teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 20px;
         }
 
-        .match-card:hover{
-            transform:translateY(-6px);
-            box-shadow:0 10px 30px rgba(0,0,0,0.4);
+        .team {
+            flex: 1;
+            text-align: center;
+            min-width: 0;
         }
 
-        .live-badge{
-            position:absolute;
-            top:15px;
-            right:15px;
-            background:#ef4444;
-            color:white;
-            padding:6px 12px;
-            border-radius:30px;
-            font-size:12px;
-            font-weight:600;
-            animation:pulse 1.5s infinite;
+        .team-flag-wrapper {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 6px;
         }
 
-        @keyframes pulse{
-            0%{opacity:1;}
-            50%{opacity:0.6;}
-            100%{opacity:1;}
+        .team-flag {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
 
-        .teams{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-top:20px;
-            margin-bottom:20px;
+        .team-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e2e8f0;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-word;
         }
 
-        .team{
-            text-align:center;
-            width:40%;
+        .vs {
+            font-size: 18px;
+            font-weight: 700;
+            color: #22c55e;
+            flex-shrink: 0;
+            padding: 6px 10px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px;
         }
 
-        .team i{
-            font-size:40px;
-            color:#38bdf8;
-            margin-bottom:10px;
+        /* ===== SCORE BLOCK ===== */
+        .score-block {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+        .score-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #22c55e;
+            letter-spacing: 2px;
         }
 
-        .team-name{
-            font-size:18px;
-            font-weight:600;
+        /* ===== MATCH INFO ===== */
+        .match-info {
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .vs{
-            font-size:22px;
-            font-weight:700;
-            color:#22c55e;
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+        .info-item i {
+            color: #94a3b8;
+            width: 16px;
+            margin-right: 8px;
         }
 
-        .match-info{
-            margin-top:15px;
-            padding-top:15px;
-            border-top:1px solid rgba(255,255,255,0.08);
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+        .status-pill.finished {
+            background: rgba(148, 163, 184, 0.15);
+            color: #94a3b8;
         }
 
-        .info-item{
-            display:flex;
-            justify-content:space-between;
-            margin-bottom:10px;
-            color:#cbd5e1;
-            font-size:15px;
+        /* ===== WATCH BUTTON ===== */
+        .watch-btn {
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+            font-size: 15px;
+            font-family: inherit;
+        }
+        .watch-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+        }
+        .watch-btn i { margin-right: 6px; }
+
+        .watch-btn.disabled {
+            background: #475569;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .watch-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            opacity: 0.6;
         }
 
-        .score{
-            font-size:20px;
-            font-weight:700;
-            color:#22c55e;
+        /* ===== EMPTY ===== */
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1e293b;
+            border-radius: 20px;
+            color: #94a3b8;
         }
+        .empty h2 { color: #cbd5e1; margin-bottom: 10px; }
 
-        .watch-btn{
-            width:100%;
-            border:none;
-            cursor:pointer;
-            display:block;
-            text-align:center;
-            margin-top:20px;
-            background:linear-gradient(135deg,#22c55e,#16a34a);
-            color:white;
-            padding:14px;
-            border-radius:12px;
-            font-weight:600;
-            transition:0.3s;
-            font-size:15px;
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 30px; }
+            .team-flag-wrapper { width: 56px; height: 56px; }
+            .team-name { font-size: 13px; }
+            .vs { font-size: 16px; padding: 5px 8px; }
+            .match-card { padding: 20px; }
+            .score-value { font-size: 22px; }
         }
-
-        .watch-btn:hover{
-            transform:scale(1.03);
-            opacity:0.9;
-        }
-
-        .watch-btn.disabled{
-            background:#475569;
-            cursor:not-allowed;
-            opacity:0.6;
-        }
-
-        .watch-btn.disabled:hover{
-            transform:none;
-            opacity:0.6;
-        }
-
-        .empty{
-            text-align:center;
-            padding:60px 20px;
-            background:#1e293b;
-            border-radius:20px;
-            color:#94a3b8;
-        }
-
-        @media(max-width:600px){
-
-            .header h1{
-                font-size:30px;
-            }
-
-            .team-name{
-                font-size:15px;
-            }
-
-            .vs{
-                font-size:18px;
-            }
-
-            .match-card{
-                padding:20px;
-            }
-        }
-
     </style>
 </head>
 <body>
@@ -205,6 +311,13 @@
 <div class="container">
 
     <div class="header">
+        <div class="header-actions">
+            <a href="{% url 'home' %}" class="home-btn">
+                <i class="fa-solid fa-house"></i> Faqja Kryesore
+            </a>
+            
+        </div>
+
         <h1>
             <i class="fa-solid fa-futbol"></i>
             Ndeshjet e Sotme
@@ -223,44 +336,70 @@
 
         <div class="match-card">
 
-            {% if match.status == "LIVE" %}
+            {% if match.status == "LIVE" or match.status == "Live" %}
             <div class="live-badge">
                 <i class="fa-solid fa-circle"></i>
                 LIVE
             </div>
             {% endif %}
 
+            {% if match.league %}
+            <div class="league-badge">
+                <i class="fa-solid fa-trophy"></i>
+                <span>{{ match.league }}</span>
+            </div>
+            {% endif %}
+
             <div class="teams">
 
                 <div class="team">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <div class="team-name">
-                        {{ match.home_name }}
+                    <div class="team-flag-wrapper">
+                        {% if match.home_flag %}
+                            <img src="{{ match.home_flag }}" alt="{{ match.home_name }}" class="team-flag" loading="lazy">
+                        {% else %}
+                            <i class="fa-solid fa-shield-halved" style="font-size: 32px; color:#38bdf8;"></i>
+                        {% endif %}
                     </div>
+                    <div class="team-name">{{ match.home_name }}</div>
                 </div>
 
                 <div class="vs">VS</div>
 
                 <div class="team">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <div class="team-name">
-                        {{ match.away_name }}
+                    <div class="team-flag-wrapper">
+                        {% if match.away_flag %}
+                            <img src="{{ match.away_flag }}" alt="{{ match.away_name }}" class="team-flag" loading="lazy">
+                        {% else %}
+                            <i class="fa-solid fa-shield-halved" style="font-size: 32px; color:#38bdf8;"></i>
+                        {% endif %}
                     </div>
+                    <div class="team-name">{{ match.away_name }}</div>
                 </div>
 
             </div>
+
+            {% if match.score %}
+            <div class="score-block">
+                <div class="score-value">{{ match.score }}</div>
+            </div>
+            {% endif %}
 
             <div class="match-info">
 
                 <div class="info-item">
                     <span>
-                        <i class="fa-solid fa-trophy"></i>
-                        Rezultati
+                        <i class="fa-solid fa-calendar-day"></i>
+                        Data
                     </span>
+                    <span>{{ match.date }}</span>
+                </div>
 
-                    <span class="score">
-                        {{ match.score }}
+                <div class="info-item">
+                    <span>
+                        <i class="fa-solid fa-clock"></i>
+                        Ora
                     </span>
+                    <span>{{ match.time }}</span>
                 </div>
 
                 <div class="info-item">
@@ -268,15 +407,18 @@
                         <i class="fa-solid fa-signal"></i>
                         Statusi
                     </span>
-
-                    <span>
-                        {{ match.raw_status }}
-                    </span>
+                    {% if match.status == "LIVE" or match.status == "Live" %}
+                        <span class="status-pill">
+                            <i class="fa-solid fa-circle" style="font-size: 6px;"></i> LIVE
+                        </span>
+                    {% else %}
+                        <span class="status-pill finished">{{ match.status }}</span>
+                    {% endif %}
                 </div>
 
             </div>
 
-            {% if match.status == "LIVE" %}
+            {% if match.status == "LIVE" or match.status == "Live" %}
 
                 <button
                     class="watch-btn"
@@ -288,10 +430,7 @@
 
             {% else %}
 
-                <button
-                    class="watch-btn disabled"
-                    disabled
-                >
+                <button class="watch-btn disabled" disabled>
                     <i class="fa-solid fa-xmark"></i>
                     Ndeshja ka mbaruar
                 </button>
@@ -316,15 +455,10 @@
 </div>
 
 <script>
-
-function openStream(matchId, button){
-
+function openStream(matchId, button) {
     console.log("MATCH ID:", matchId);
-
     window.location.href = `/rapid/stream/${matchId}/`;
-
 }
-
 </script>
 
 </body>
