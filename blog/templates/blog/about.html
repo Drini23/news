@@ -7,17 +7,33 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --bg: #0a0f1c;
+            --card-bg: rgba(30, 41, 59, 0.55);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --muted-2: #64748b;
+            --accent: #38bdf8;
+            --primary: #22c55e;
+            --danger: #ef4444;
+        }
+
+        html { scroll-behavior: smooth; }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 40px 15px;
+            padding: 110px 15px 60px;
             position: relative;
+            overflow-x: hidden;
         }
 
         body::before {
@@ -25,91 +41,107 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 55%),
-                radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.08) 0%, transparent 55%);
+                radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.13) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(34, 197, 94, 0.11) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 55%);
+            animation: bgShift 20s ease-in-out infinite alternate;
             pointer-events: none;
             z-index: 0;
         }
 
-        .container {
+        @keyframes bgShift {
+            0%   { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.08) translate(-1.5%, -1.5%); }
+        }
+
+        .container-page {
             max-width: 1000px;
             margin: auto;
             position: relative;
             z-index: 1;
         }
 
-        /* ===== HEADER ===== */
-        .header-actions {
+        /* ===== BRAND HEADER ===== */
+        .brand-header {
             display: flex;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 14px;
+            margin-bottom: 34px;
+            padding: 16px 22px;
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+        }
+
+        .brand-header svg {
+            filter: drop-shadow(0 4px 10px rgba(34, 197, 94, 0.35));
+            transition: transform 0.4s ease;
+        }
+
+        .brand-header:hover svg { transform: rotate(20deg); }
+
+        .brand-header .titles {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .brand-header .title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-header .subtitle {
+            font-size: 0.7rem;
+            color: var(--muted-2);
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* ===== PAGE TITLE ===== */
+        .page-title {
+            text-align: center;
             margin-bottom: 40px;
         }
 
-        .home-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            color: #38bdf8;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: 0.25s ease;
-        }
-        .home-btn:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: #38bdf8;
-            transform: translateY(-2px);
-            color: #7dd3fc;
-        }
-        .home-btn.accent {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: #22c55e;
-        }
-        .home-btn.accent:hover {
-            background: rgba(34, 197, 94, 0.2);
-            border-color: #22c55e;
-            color: #4ade80;
-        }
-
-        .page-title {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
         .page-title h1 {
-            font-size: 44px;
+            font-size: 46px;
             font-weight: 800;
             background: linear-gradient(to right, #38bdf8, #22c55e);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
+            letter-spacing: -0.5px;
         }
 
         .page-title p {
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 16px;
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         /* ===== ABOUT CARD ===== */
         .about-card {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 35px 30px;
-            margin-top: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 38px 34px;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
         }
 
         .about-card::before {
@@ -117,7 +149,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 4px;
+            width: 5px;
             height: 100%;
             background: linear-gradient(180deg, #38bdf8, #22c55e);
         }
@@ -125,33 +157,49 @@
         .about-card h2 {
             font-size: 24px;
             font-weight: 700;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: #f1f5f9;
+            color: var(--text);
         }
 
         .about-card h2 i {
-            color: #38bdf8;
-            font-size: 22px;
+            color: var(--accent);
+            font-size: 20px;
+            width: 42px;
+            height: 42px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            border-radius: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .about-card p {
             color: #cbd5e1;
             font-size: 15px;
-            line-height: 1.8;
-            margin-bottom: 14px;
+            line-height: 1.85;
+            margin-bottom: 16px;
         }
 
         .about-card p:last-child { margin-bottom: 0; }
+
+        .about-card p strong {
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
 
         .features {
             list-style: none;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 14px;
-            margin-top: 22px;
+            margin-top: 26px;
         }
 
         .features li {
@@ -160,37 +208,46 @@
             gap: 12px;
             background: rgba(56, 189, 248, 0.06);
             border: 1px solid rgba(56, 189, 248, 0.15);
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
             font-size: 14px;
             color: #cbd5e1;
+            transition: all 0.25s ease;
+        }
+
+        .features li:hover {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.35);
+            transform: translateY(-2px);
         }
 
         .features li i {
-            color: #22c55e;
+            color: var(--primary);
             font-size: 16px;
             flex-shrink: 0;
         }
 
-        /* ===== CONTACT ===== */
-        .contact-section { margin-top: 50px; }
-
+        /* ===== SECTION TITLES ===== */
         .section-title {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 34px;
         }
 
         .section-title h2 {
             font-size: 30px;
             font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 8px;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
         }
 
         .section-title p {
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 15px;
         }
+
+        /* ===== CONTACT ===== */
+        .contact-section { margin-top: 60px; }
 
         .contact-grid {
             display: grid;
@@ -199,17 +256,20 @@
         }
 
         .contact-card {
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 28px 22px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 18px;
+            padding: 30px 24px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.3s ease;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: inherit;
             display: block;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .contact-card::after {
@@ -220,62 +280,79 @@
             transform: translateX(-50%);
             width: 0;
             height: 3px;
-            background: linear-gradient(90deg, #38bdf8, #22c55e);
-            transition: width 0.35s ease;
+            transition: width 0.4s ease;
+        }
+
+        .contact-card.email::after {
+            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+        }
+
+        .contact-card.whatsapp::after {
+            background: linear-gradient(90deg, #25d366, #128c7e);
+        }
+
+        .contact-card.instagram::after {
+            background: linear-gradient(90deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
         }
 
         .contact-card:hover::after { width: 100%; }
 
         .contact-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(56, 189, 248, 0.3);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
+        .contact-card.email:hover { border-color: rgba(56, 189, 248, 0.4); }
+        .contact-card.whatsapp:hover { border-color: rgba(37, 211, 102, 0.4); }
+        .contact-card.instagram:hover { border-color: rgba(236, 72, 153, 0.4); }
+
         .contact-icon {
-            width: 60px;
-            height: 60px;
+            width: 66px;
+            height: 66px;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-bottom: 16px;
+            font-size: 26px;
+            margin-bottom: 18px;
             transition: 0.3s ease;
         }
 
-        .contact-card:hover .contact-icon { transform: scale(1.1); }
+        .contact-card:hover .contact-icon { transform: scale(1.12) rotate(-6deg); }
 
         .contact-card.email .contact-icon {
             background: rgba(56, 189, 248, 0.12);
             color: #38bdf8;
             border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.2);
         }
 
         .contact-card.whatsapp .contact-icon {
             background: rgba(37, 211, 102, 0.12);
             color: #25d366;
             border: 1px solid rgba(37, 211, 102, 0.3);
+            box-shadow: 0 0 24px rgba(37, 211, 102, 0.2);
         }
 
         .contact-card.instagram .contact-icon {
             background: rgba(236, 72, 153, 0.12);
             color: #ec4899;
             border: 1px solid rgba(236, 72, 153, 0.3);
+            box-shadow: 0 0 24px rgba(236, 72, 153, 0.2);
         }
 
         .contact-card h3 {
             font-size: 17px;
             font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 6px;
+            color: var(--text);
+            margin-bottom: 8px;
         }
 
         .contact-card p {
             font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 14px;
-            line-height: 1.5;
+            color: var(--muted);
+            margin-bottom: 16px;
+            line-height: 1.55;
         }
 
         .contact-value {
@@ -289,93 +366,167 @@
         .contact-card.instagram .contact-value { color: #ec4899; }
 
         /* ===== FAQ ===== */
-        .faq-section { margin-top: 60px; }
+        .faq-section { margin-top: 70px; }
 
         .faq-item {
-            background: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            margin-bottom: 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            margin-bottom: 14px;
             overflow: hidden;
-            transition: 0.25s ease;
+            transition: all 0.3s ease;
         }
 
         .faq-item[open] {
-            border-color: rgba(56, 189, 248, 0.3);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .faq-item summary {
             cursor: pointer;
-            padding: 18px 22px;
+            padding: 20px 24px;
             font-weight: 600;
             font-size: 15px;
-            color: #f1f5f9;
+            color: var(--text);
             list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.2s ease;
+            transition: all 0.25s ease;
+            gap: 16px;
         }
 
         .faq-item summary::-webkit-details-marker { display: none; }
-        .faq-item summary:hover { color: #38bdf8; }
+        .faq-item summary:hover { color: var(--accent); }
 
         .faq-item summary::after {
             content: '\f067';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             font-size: 13px;
-            color: #38bdf8;
+            color: var(--accent);
             transition: transform 0.3s ease;
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .faq-item[open] summary::after { content: '\f068'; }
+        .faq-item[open] summary::after {
+            content: '\f068';
+            transform: rotate(180deg);
+        }
 
         .faq-item .faq-body {
-            padding: 0 22px 18px;
+            padding: 0 24px 20px;
             color: #cbd5e1;
             font-size: 14px;
-            line-height: 1.7;
+            line-height: 1.75;
+        }
+
+        /* ===== BACK LINK ===== */
+        .back-wrap {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text);
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.25s ease;
+        }
+        .back-link:hover {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
+            transform: translateY(-2px);
         }
 
         /* ===== FOOTER ===== */
         .page-footer {
             margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 28px 20px;
             text-align: center;
-            color: #64748b;
-            font-size: 13px;
+            color: var(--muted-2);
+            font-size: 12.5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .page-footer p { margin-bottom: 6px; }
 
+        .page-footer .footer-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .page-footer .footer-brand .title {
+            font-weight: 700;
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-footer p { margin-bottom: 6px; line-height: 1.6; }
+
+        .page-footer .heart { color: var(--danger); }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
-            body { padding: 25px 12px; }
+            body { padding: 95px 12px 40px; }
             .page-title h1 { font-size: 30px; }
             .page-title p { font-size: 14px; }
             .about-card { padding: 26px 20px; }
             .about-card h2 { font-size: 20px; }
             .section-title h2 { font-size: 24px; }
             .contact-card { padding: 22px 18px; }
+            .brand-header { padding: 12px 16px; }
+            .brand-header .title { font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+{% include "blog/navbar.html" %}
 
-    <div class="header-actions">
-        <a href="/" class="home-btn">
-            <i class="fa-solid fa-house"></i> Kreu
-        </a>
+<div class="container-page">
+
+    <!-- ===== BRAND HEADER ===== -->
+    <div class="brand-header">
+        <svg width="34" height="34" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="15" cy="15" r="14" stroke="#22c55e" stroke-width="2"/>
+            <path d="M15 8L20 18H10L15 8Z" fill="#22c55e"/>
+            <circle cx="15" cy="15" r="4" fill="#f1c40f"/>
+        </svg>
+        <div class="titles">
+            <span class="title">Futboll AL24</span>
+            <span class="subtitle">Rreth Nesh</span>
+        </div>
     </div>
 
+    <!-- ===== PAGE TITLE ===== -->
     <div class="page-title">
         <h1>Rreth Nesh</h1>
         <p>Platforma juaj e preferuar për ndeshje live, rezultate dhe lajme futbolli — falas për të gjithë.</p>
     </div>
 
+    <!-- ===== ABOUT CARD ===== -->
     <div class="about-card">
         <h2><i class="fa-solid fa-circle-info"></i> Kush jemi ne</h2>
         <p>
@@ -396,6 +547,7 @@
         </ul>
     </div>
 
+    <!-- ===== CONTACT ===== -->
     <div class="contact-section">
         <div class="section-title">
             <h2>Na Kontakto</h2>
@@ -437,6 +589,7 @@
         </div>
     </div>
 
+    <!-- ===== FAQ ===== -->
     <div class="faq-section">
         <div class="section-title">
             <h2>Pyetje të Shpeshta</h2>
@@ -473,12 +626,30 @@
         </details>
     </div>
 
+    <!-- ===== BACK LINK ===== -->
+    <div class="back-wrap">
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Kthehu në faqen kryesore
+        </a>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
     <div class="page-footer">
+        <div class="footer-brand">
+            <svg width="22" height="22" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="15" cy="15" r="14" stroke="#22c55e" stroke-width="2"/>
+                <path d="M15 8L20 18H10L15 8Z" fill="#22c55e"/>
+                <circle cx="15" cy="15" r="4" fill="#f1c40f"/>
+            </svg>
+            <span class="title">Futboll AL24</span>
+        </div>
         <p>&copy; {% now "Y" %} Futboll AL. Të gjitha të drejtat e rezervuara.</p>
-        <p>Bërë me <i class="fa-solid fa-heart" style="color:#ef4444;"></i> për tifozët e futbollit.</p>
+        <p>Bërë me <i class="fa-solid fa-heart heart"></i> për tifozët e futbollit.</p>
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

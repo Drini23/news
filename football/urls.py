@@ -28,6 +28,7 @@ urlpatterns = [
     path('live_stream_api/', include('live_stream_api.urls')),
     path('register/', include('register.urls')),
     path('index/', include('index.urls')),  
+    
 ]
 
 if settings.DEBUG:

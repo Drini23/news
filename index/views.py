@@ -289,3 +289,23 @@ def stripe_webhook(request):
             sub.save()
 
     return HttpResponse(status=200)
+
+
+@login_required
+def profile(request):
+    """Private profile page for the currently logged-in user."""
+    sub, _ = Subscription.objects.get_or_create(user=request.user)
+
+    # Whether the user currently has active access
+    is_active = has_active_subscription(request.user)
+
+    # A special flag for you / staff
+    is_owner = request.user.is_superuser or request.user.is_staff
+
+    context = {
+        "sub": sub,
+        "is_active": is_active,
+        "is_owner": is_owner,
+        "has_customer_id": bool(sub.stripe_customer_id),
+    }
+    return render(request, "index/profile.html", context)
