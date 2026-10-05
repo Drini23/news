@@ -30,6 +30,7 @@ dj-database-url = "*"
 mysqlclient = "*"
 pymysql = "*"
 pillow = "*"
+django-redis = "*"
 
 [dev-packages]
 
