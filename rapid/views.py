@@ -3,17 +3,18 @@ from functools import lru_cache
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from django.shortcuts import render
+from django.core.cache import cache          # ← NEW
 from index.decorators import paywall
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 import base64
 
 
-
-
-
-
 BASE_URL = "https://all-sport-live-stream.p.rapidapi.com"
+
+# ---------- Cache config for all_sport_api ----------
+ALL_SPORT_CACHE_KEY = "all_sport_api:live_matches"
+ALL_SPORT_CACHE_TTL = 60 * 2   # 2 minutes — tune as needed
 
 
 def fetch_stream(gmid, headers):
@@ -46,11 +47,19 @@ def fetch_stream(gmid, headers):
     except Exception as e:
         print(f"[stream] gmid={gmid} ERROR: {e}")
         return gmid, None
-    
-    
+
+
 @login_required(login_url='login')
 @paywall
 def all_sport_api(request):
+    # ---------- 0. Try cache first ----------
+    cached_matches = cache.get(ALL_SPORT_CACHE_KEY)
+    if cached_matches is not None:
+        print(f"[all_sport_api] Cache HIT ({len(cached_matches)} matches)")
+        return render(request, "rapid/all_sport_api.html", {"matches": cached_matches})
+
+    print("[all_sport_api] Cache MISS — hitting API")
+
     headers = {
         "x-rapidapi-key": S_ALL_SPORT_API,
         "x-rapidapi-host": "all-sport-live-stream.p.rapidapi.com",
@@ -72,6 +81,7 @@ def all_sport_api(request):
 
     if list_response.status_code != 200:
         print(f"[all_sport_api] /esid failed: {list_response.text}")
+        # Do NOT cache failures — let next request retry
         return render(request, "rapid/all_sport_api.html", {"matches": []})
 
     data = (list_response.json() or {}).get("data") or {}
@@ -105,6 +115,10 @@ def all_sport_api(request):
             "iframe_source": stream_map.get(m.get("gmid")),
             "m3u8_source": None,
         })
+
+    # ---------- 3. Store in Redis cache ----------
+    cache.set(ALL_SPORT_CACHE_KEY, matches, ALL_SPORT_CACHE_TTL)
+    print(f"[all_sport_api] Cached {len(matches)} matches for {ALL_SPORT_CACHE_TTL}s")
 
     print(f"[all_sport_api] Done. {len(matches)} live matches ready.")
     print("=" * 60)

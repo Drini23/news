@@ -1,7 +1,3 @@
-"""
-Django settings for football project.
-"""
-
 from pathlib import Path
 import os
 
