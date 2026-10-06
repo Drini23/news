@@ -3,7 +3,7 @@ from functools import lru_cache
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from django.shortcuts import render
-from django.core.cache import cache          # ← NEW
+from django.core.cache import cache
 from index.decorators import paywall
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -12,13 +12,17 @@ import base64
 
 BASE_URL = "https://all-sport-live-stream.p.rapidapi.com"
 
-# ---------- Cache config for all_sport_api ----------
+# ---------- Cache config ----------
 ALL_SPORT_CACHE_KEY = "all_sport_api:live_matches"
-ALL_SPORT_CACHE_TTL = 60 * 2   # 2 minutes — tune as needed
+ALL_SPORT_CACHE_TTL = 60 * 10           # 10 minutes for the match list
+STREAM_CACHE_TTL    = 60 * 30           # 30 minutes per stream URL
 
 
+# ==================================================================
+# STREAM FETCHING (with per-stream caching)
+# ==================================================================
 def fetch_stream(gmid, headers):
-    """Fetch one stream URL. Returns (gmid, url_or_None)."""
+    """Raw fetch — always hits the API. Returns (gmid, url_or_None)."""
     try:
         r = requests.get(
             f"{BASE_URL}/api/d/stream_source",
@@ -49,6 +53,23 @@ def fetch_stream(gmid, headers):
         return gmid, None
 
 
+def get_stream_cached(gmid, headers):
+    """Cache-aware wrapper: only calls the API on cache miss."""
+    key = f"stream:{gmid}"
+    url = cache.get(key)
+    if url is not None:
+        print(f"[stream] gmid={gmid} CACHE HIT")
+        return gmid, url
+
+    gmid, url = fetch_stream(gmid, headers)
+    if url:                                     # only cache successes
+        cache.set(key, url, STREAM_CACHE_TTL)
+    return gmid, url
+
+
+# ==================================================================
+# MAIN ENDPOINT
+# ==================================================================
 @login_required(login_url='login')
 @paywall
 def all_sport_api(request):
@@ -70,19 +91,37 @@ def all_sport_api(request):
     print("[all_sport_api] REQUEST 1: fetching /esid ...")
 
     # ---------- REQUEST 1: match list ----------
-    list_response = requests.get(
-        f"{BASE_URL}/esid",
-        headers=headers,
-        params={"sid": "1"},
-        timeout=15
-    )
+    try:
+        list_response = requests.get(
+            f"{BASE_URL}/esid",
+            headers=headers,
+            params={"sid": "1"},
+            timeout=15
+        )
+    except Exception as e:
+        print(f"[all_sport_api] /esid ERROR: {e}")
+        list_response = None
 
-    print(f"[all_sport_api] /esid status: {list_response.status_code}")
+    # ---------- Handle API failure (429, 500, timeout, etc.) ----------
+    if list_response is None or list_response.status_code != 200:
+        status = list_response.status_code if list_response else "NETWORK_ERROR"
+        body = list_response.text[:200] if list_response else "no response"
+        print(f"[all_sport_api] /esid failed: {status} {body}")
 
-    if list_response.status_code != 200:
-        print(f"[all_sport_api] /esid failed: {list_response.text}")
-        # Do NOT cache failures — let next request retry
-        return render(request, "rapid/all_sport_api.html", {"matches": []})
+        # Serve stale cache if available, so users still see matches
+        stale = cache.get(ALL_SPORT_CACHE_KEY)
+        if stale:
+            print("[all_sport_api] Serving STALE cache due to API error")
+            return render(request, "rapid/all_sport_api.html", {
+                "matches": stale,
+                "api_error": "Live data temporarily unavailable — showing last known matches.",
+            })
+
+        # Nothing cached at all — show empty with a friendly error
+        return render(request, "rapid/all_sport_api.html", {
+            "matches": [],
+            "api_error": "Live match data is temporarily unavailable. Please try again shortly.",
+        })
 
     data = (list_response.json() or {}).get("data") or {}
     match_items = data.get("t1") or []
@@ -91,13 +130,13 @@ def all_sport_api(request):
     live_matches = [m for m in match_items if m.get("iplay") and m.get("gmid")]
     print(f"[all_sport_api] {len(match_items)} matches, {len(live_matches)} live")
 
-    # ---------- REQUEST 2: all stream URLs, in parallel ----------
-    print("[all_sport_api] REQUEST 2: fetching all stream sources in parallel ...")
+    # ---------- REQUEST 2: stream URLs (cached per-match) ----------
+    print("[all_sport_api] REQUEST 2: fetching stream sources (cache-aware) ...")
 
-    stream_map = {}   # gmid -> url
+    stream_map = {}
     with ThreadPoolExecutor(max_workers=10) as pool:
         futures = {
-            pool.submit(fetch_stream, m["gmid"], headers): m["gmid"]
+            pool.submit(get_stream_cached, m["gmid"], headers): m["gmid"]
             for m in live_matches
         }
         for fut in as_completed(futures):
@@ -108,12 +147,12 @@ def all_sport_api(request):
     matches = []
     for m in live_matches:
         matches.append({
-            "teams_name": m.get("ename", "Unknown"),
-            "team_two":   m.get("cname", ""),
-            "score":      m.get("sc", "vs"),
-            "start_time": m.get("stime", "Live"),
+            "teams_name":    m.get("ename", "Unknown"),
+            "team_two":      m.get("cname", ""),
+            "score":         m.get("sc", "vs"),
+            "start_time":    m.get("stime", "Live"),
             "iframe_source": stream_map.get(m.get("gmid")),
-            "m3u8_source": None,
+            "m3u8_source":   None,
         })
 
     # ---------- 3. Store in Redis cache ----------
@@ -124,6 +163,8 @@ def all_sport_api(request):
     print("=" * 60)
 
     return render(request, "rapid/all_sport_api.html", {"matches": matches})
+
+
 
 
 def highlights(request):
