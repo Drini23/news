@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="sq" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,6 +31,103 @@
             margin-bottom: 30px;
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .home-link {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .home-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-wrapper {
+            max-width: 520px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 50px 14px 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            color: #333;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25), 0 5px 20px rgba(0,0,0,0.2);
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.05);
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .search-clear:hover {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+        }
+
+        .search-clear.visible {
+            display: flex;
+        }
+
+        .search-status {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            min-height: 20px;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .video-player-section {
@@ -243,6 +340,33 @@
             padding: 20px;
         }
 
+        .no-results {
+            display: none;
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            grid-column: 1 / -1;
+            backdrop-filter: blur(6px);
+        }
+
+        .no-results .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .no-results h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .no-results p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .matches-grid {
                 grid-template-columns: 1fr;
@@ -256,15 +380,22 @@
                 flex-direction: column;
                 gap: 10px;
             }
+
+            .search-input {
+                font-size: 14px;
+                padding: 12px 46px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
 </head>
 <body>
-     {% include "blog/navbar.html" %} 
+{% include "blog/navbar.html" %}
 <div class="container">
     <h1>⚽ Ndeshje Live</h1>
-    <h1><a href="{%url 'home'%}" class="home-link">🏠 Kthehu në faqen kryesore</a></h1 style=color; red>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a href="{% url 'home' %}" class="home-link">🏠 Kthehu në faqen kryesore</a>
+    </div>
 
     <!-- Video Player Section -->
     <div id="videoPlayer" class="video-player-section">
@@ -283,10 +414,28 @@
         </div>
     </div>
 
+    <!-- ===== SEARCH BAR ===== -->
+    <div class="search-wrapper">
+        <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Kërko ekip ose ligë..."
+            autocomplete="off"
+            aria-label="Kërko ndeshje"
+        >
+        <span class="search-icon">🔍</span>
+        <button class="search-clear" id="searchClear" aria-label="Pastro kërkimin">×</button>
+    </div>
+    <div class="search-status" id="searchStatus" aria-live="polite"></div>
+
     <!-- Matches Grid -->
-    <div class="matches-grid">
+    <div class="matches-grid" id="matchesGrid">
         {% for match in matches %}
-        <div class="match-card">
+        <div class="match-card"
+             data-home="{{ match.home_team|lower }}"
+             data-away="{{ match.away_team|lower }}"
+             data-league="{{ match.league|default:''|lower }}">
             <div class="match-header">
                 <div class="teams">
                     {{ match.home_team }} vs {{ match.away_team }}
@@ -301,7 +450,6 @@
                 <span class="league">{{ match.league }}</span>
             </div>
 
-
             <div class="streams-section">
                 <div class="streams-title">Streams të vlershëm:</div>
                 {% if match.stream_servers %}
@@ -315,7 +463,7 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="no-streams">Nuk ka servera për momentin </div>
+                <div class="no-streams">Nuk ka servera për momentin</div>
                 {% endif %}
             </div>
         </div>
@@ -324,6 +472,13 @@
             No live matches available at the moment
         </div>
         {% endfor %}
+    </div>
+
+    <!-- ===== NO SEARCH RESULTS ===== -->
+    <div class="no-results" id="noResults">
+        <div class="icon">🔍</div>
+        <h3>Nuk u gjet asnjë ndeshje</h3>
+        <p>Provo një emër tjetër ekipi ose lige.</p>
     </div>
 </div>
 
@@ -339,7 +494,6 @@
         const directLinkSection = document.getElementById('directLinkSection');
         const directLink = document.getElementById('directLink');
         const videoContainer = document.getElementById('videoContainer');
-        const proxiedUrl = `/stream-proxy/?url=${encodeURIComponent(url)}`;
 
         // Reset previous stream
         if (currentHls) {
@@ -424,17 +578,14 @@
         streamFrame.style.display = 'block';
         streamFrame.src = url;
 
-        // Hide loading after a delay
         setTimeout(() => {
             loadingMessage.style.display = 'none';
         }, 2000);
 
-        // Check if iframe loads successfully
         streamFrame.onerror = function() {
             showError(videoContainer, 'Cannot embed this stream. Please use "Open in New Tab" button below.');
         };
 
-        // Listen for iframe load
         streamFrame.onload = function() {
             loadingMessage.style.display = 'none';
         };
@@ -458,20 +609,83 @@
         const videoElement = document.getElementById('videoElement');
         const streamFrame = document.getElementById('streamFrame');
 
-        // Stop HLS
         if (currentHls) {
             currentHls.destroy();
             currentHls = null;
         }
 
-        // Stop video and iframe
         videoElement.pause();
         videoElement.src = '';
         streamFrame.src = '';
 
-        // Hide the player
         videoPlayer.classList.remove('active');
     }
+
+    /* =========================================================
+       Client-side search (zero extra requests)
+       ========================================================= */
+    (function () {
+        const input     = document.getElementById('searchInput');
+        const clearBtn  = document.getElementById('searchClear');
+        const status    = document.getElementById('searchStatus');
+        const noResults = document.getElementById('noResults');
+        const grid      = document.getElementById('matchesGrid');
+
+        if (!input || !grid) return;
+
+        const cards = Array.from(grid.querySelectorAll('.match-card'));
+        if (cards.length === 0) return;
+
+        // Build search index once
+        const index = cards.map(card => ({
+            el: card,
+            haystack: [
+                card.dataset.home,
+                card.dataset.away,
+                card.dataset.league
+            ].filter(Boolean).join(' ').toLowerCase()
+        }));
+
+        let debounceTimer;
+
+        function applyFilter() {
+            const q = input.value.trim().toLowerCase();
+            let visible = 0;
+
+            index.forEach(({ el, haystack }) => {
+                const matches = q === '' || haystack.includes(q);
+                el.style.display = matches ? '' : 'none';
+                if (matches) visible++;
+            });
+
+            clearBtn.classList.toggle('visible', q.length > 0);
+            noResults.style.display = (q && visible === 0) ? 'block' : 'none';
+
+            if (q) {
+                status.textContent = `${visible} ndeshje u gjet${visible === 1 ? '' : 'ën'}`;
+            } else {
+                status.textContent = '';
+            }
+        }
+
+        input.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(applyFilter, 100);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            applyFilter();
+            input.focus();
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                input.value = '';
+                applyFilter();
+            }
+        });
+    })();
 </script>
 </body>
 </html>
