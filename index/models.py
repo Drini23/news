@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings 
 
 
 class Subscription(models.Model):
@@ -32,3 +33,23 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.user.email} — {self.status}"
+    
+
+class UserActivity(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='activity'
+    )
+
+    last_seen = models.DateTimeField(
+        default=timezone.now,
+        db_index=True
+    )
+
+    def __str__(self):
+        return f"{self.user} - {self.last_seen}"
+
+    class Meta:
+        verbose_name = "User Activity"
+        verbose_name_plural = "User Activities"
