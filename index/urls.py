@@ -7,7 +7,7 @@ urlpatterns = [
     path("success/", views.success_page, name="success"),
     path("cancel/", views.cancel_page, name="cancel"),
     path("customer-portal/", views.customer_portal, name="customer_portal"),
-    path("webhooks/stripe/", views.stripe_webhook, name="stripe_webhook"),
+    path("stripe/webhook/", views.stripe_webhook, name="stripe_webhook"),  
     
     path("profile/", views.profile, name="profile"),
 ]
